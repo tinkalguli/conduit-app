@@ -28,26 +28,26 @@ class Home extends Component {
     const { activeFeed, activeTag } = this.state;
     return (
       <main className="home-page">
-        <section className="banner">
+        {/* <section className="banner">
           <div className="container">
             <h1 className="logo-font">conduit</h1>
             <p>A place to share your knowledge.</p>
           </div>
-        </section>
+        </section> */}
 
         <section className="container page">
           <div className="row">
             <div className="col-md-9">
               <div className="feed-toggle">
                 <ul className="nav nav-pills outline-active">
-                  {/* <li
+                  <li
                     onClick={() => this.handleFeedClick("personal")}
                     className={`nav-item nav-link ${
                       activeFeed === "personal" ? "active" : ""
                     }`}
                   >
                     Your Feed
-                  </li> */}
+                  </li>
                   <li
                     onClick={() => this.handleFeedClick("global")}
                     className={`nav-item nav-link ${

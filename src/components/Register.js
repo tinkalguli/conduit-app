@@ -14,8 +14,26 @@ class Register extends Component {
         password: "",
       },
       postResponse: null,
+      token: "",
     };
   }
+  handleUpdateLocalStorage = () => {
+    localStorage.setItem("token", this.state.token);
+  };
+  // componentDidMount() {
+  //   if (localStorage.token) {
+  //     this.setState({
+  //       token: JSON.parse(localStorage.token) || "",
+  //     });
+  //   }
+  //   window.addEventListener("beforeunload", this.handleUpdateLocalStorage);
+  // }
+  // componentWillUnmount() {
+  //   window.removeEventListener(
+  //     "beforeunload",
+  //     this.handleUpdateLocalStorage
+  //   );
+  // }
   handleSubmit = (event) => {
     event.preventDefault();
     const { username, email, password } = this.state;
@@ -30,7 +48,12 @@ class Register extends Component {
       };
       fetch("/api/users", requestOptions)
         .then((response) => response.json())
-        .then((data) => this.setState({ postResponse: data }));
+        .then((data) =>
+          this.setState(
+            () => ({ postResponse: data, token: data.user.token }),
+            this.handleUpdateLocalStorage
+          )
+        );
     }
   };
   handleChange = ({ target }) => {

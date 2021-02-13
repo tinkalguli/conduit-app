@@ -1,8 +1,8 @@
 import { Component } from "react";
-import Loader from "./partials/loader/Loader";
+import Loader from "./loader/Loader";
 import moment from "moment";
 import { Link } from "react-router-dom";
-import TagPills from "./partials/TagPills";
+import TagPills from "./TagPills";
 
 class ArticleList extends Component {
   constructor(props) {

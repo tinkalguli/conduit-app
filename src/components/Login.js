@@ -13,8 +13,26 @@ class Login extends Component {
         password: "",
       },
       postResponse: null,
+      token: "",
     };
   }
+  handleUpdateLocalStorage = () => {
+    localStorage.setItem("token", this.state.token);
+  };
+  // componentDidMount() {
+  //   if (localStorage.token) {
+  //     this.setState({
+  //       token: localStorage.token || "",
+  //     });
+  //   }
+  //   window.addEventListener("beforeunload", this.handleUpdateLocalStorage);
+  // }
+  // componentWillUnmount() {
+  //   window.removeEventListener(
+  //     "beforeunload",
+  //     this.handleUpdateLocalStorage
+  //   );
+  // }
   handleSubmit = (event) => {
     event.preventDefault();
     const { email, password } = this.state;
@@ -29,7 +47,12 @@ class Login extends Component {
       };
       fetch("/api/users/login", requestOptions)
         .then((response) => response.json())
-        .then((data) => this.setState({ postResponse: data }));
+        .then((data) =>
+          this.setState(
+            () => ({ postResponse: data, token: data?.user?.token }),
+            this.handleUpdateLocalStorage
+          )
+        );
     }
   };
   handleChange = ({ target }) => {
