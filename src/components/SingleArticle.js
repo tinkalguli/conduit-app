@@ -14,7 +14,7 @@ class SingleArticle extends Component {
   }
   componentDidMount() {
     const slug = this.props.match.params.slug;
-    fetch(`https://mighty-oasis-08080.herokuapp.com/api/articles/${slug}`)
+    fetch(`/api/articles/${slug}`)
       .then((res) => res.json())
       .then((res) => {
         this.setState({

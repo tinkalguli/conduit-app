@@ -5,41 +5,59 @@ class Register extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      name: "",
+      username: "",
       email: "",
       password: "",
       errors: {
-        name: "",
+        username: "",
         email: "",
         password: "",
       },
+      postResponse: null,
     };
   }
+  handleSubmit = (event) => {
+    event.preventDefault();
+    const { username, email, password } = this.state;
+    const user = { username, email, password };
+    const errors = this.state.errors;
+
+    if (!errors.username && !errors.email && !errors.password) {
+      const requestOptions = {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user: user }),
+      };
+      fetch("/api/users", requestOptions)
+        .then((response) => response.json())
+        .then((data) => this.setState({ postResponse: data }));
+    }
+  };
   handleChange = ({ target }) => {
-    let { name, value } = target;
+    const { name, value } = target;
     let errors = this.state.errors;
 
     switch (name) {
-      case "name":
-        errors.name =
+      case "username":
+        errors.username =
           value.length === 0
-            ? "Name is required"
-            : !validateName(value)
-            ? "Name must be atleast 6 characters"
+            ? "Username is required"
+            : !validateUsername(value)
+            ? "Username must be atleast 6 characters"
             : "";
         break;
       case "email":
         errors.email =
           value.length === 0
-            ? "Name is required"
+            ? "Email is required"
             : !validateEmail(value)
-            ? "Email should contain a '@' symbol"
+            ? "Email is invalid"
             : "";
         break;
       case "password":
         errors.password =
           value.length === 0
-            ? "Name is required"
+            ? "Password is required"
             : !validatePassword(value)
             ? "Password must contain a letter, a number and atleast 6 characters"
             : "";
@@ -66,20 +84,21 @@ class Register extends Component {
                 <Link to="/login">Have an account?</Link>
               </p>
 
-              <form>
+              <form onSubmit={this.handleSubmit}>
                 <fieldset className="form-group">
                   <input
                     onChange={this.handleChange}
-                    name="name"
-                    value={this.state.name}
+                    name="username"
+                    value={this.state.username}
                     className={`form-control form-control-lg ${
-                      errors.name && "error"
+                      errors.username && "error"
                     }`}
                     type="text"
-                    placeholder="Your Name"
+                    placeholder="Username"
+                    required
                   />
-                  {errors.name ? (
-                    <span className="error-msg">{errors.name}</span>
+                  {errors.username ? (
+                    <span className="error-msg">{errors.username}</span>
                   ) : (
                     ""
                   )}
@@ -92,8 +111,9 @@ class Register extends Component {
                     className={`form-control form-control-lg ${
                       errors.email && "error"
                     }`}
-                    type="text"
+                    type="email"
                     placeholder="Email"
+                    required
                   />
                   {errors.email ? <span>{errors.email}</span> : ""}
                 </fieldset>
@@ -107,10 +127,14 @@ class Register extends Component {
                     }`}
                     type="password"
                     placeholder="Password"
+                    required
                   />
                   {errors.password ? <span>{errors.password}</span> : ""}
                 </fieldset>
-                <button className="btn btn-lg btn-primary pull-xs-right">
+                <button
+                  type="submit"
+                  className={`btn btn-lg btn-primary pull-xs-right`}
+                >
                   Sign up
                 </button>
               </form>
@@ -122,12 +146,13 @@ class Register extends Component {
   }
 }
 
-function validateName(name) {
+function validateUsername(name) {
   return name.length >= 6;
 }
 
 export function validateEmail(email) {
-  return email.includes("@");
+  const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  return re.test(email);
 }
 
 export function validatePassword(password) {

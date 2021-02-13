@@ -28,9 +28,7 @@ class ArticleList extends Component {
     }
 
     try {
-      fetch(
-        `https://mighty-oasis-08080.herokuapp.com/api/articles${urlPart}?${queryPart}`
-      )
+      fetch(`/api/articles${urlPart}?${queryPart}`)
         .then((res) => res.json())
         .then((res) => {
           this.setState({

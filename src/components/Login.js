@@ -12,8 +12,26 @@ class Login extends Component {
         email: "",
         password: "",
       },
+      postResponse: null,
     };
   }
+  handleSubmit = (event) => {
+    event.preventDefault();
+    const { email, password } = this.state;
+    const user = { email, password };
+    const errors = this.state.errors;
+
+    if (!errors.email && !errors.password) {
+      const requestOptions = {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user: user }),
+      };
+      fetch("/api/users", requestOptions)
+        .then((response) => response.json())
+        .then((data) => this.setState({ postResponse: data }));
+    }
+  };
   handleChange = ({ target }) => {
     let { name, value } = target;
     let errors = this.state.errors;
@@ -22,15 +40,15 @@ class Login extends Component {
       case "email":
         errors.email =
           value.length === 0
-            ? "Name is required"
+            ? "Email is required"
             : !validateEmail(value)
-            ? "Email should contain a @ symbol"
+            ? "Email is invalid"
             : "";
         break;
       case "password":
         errors.password =
           value.length === 0
-            ? "Name is required"
+            ? "Password is required"
             : !validatePassword(value)
             ? "Password must contain a letter, a number and atleast 6 characters"
             : "";
@@ -68,6 +86,7 @@ class Login extends Component {
                     }`}
                     type="text"
                     placeholder="Email"
+                    required
                   />
                   {errors.email ? <span>{errors.email}</span> : ""}
                 </fieldset>
@@ -81,6 +100,7 @@ class Login extends Component {
                     }`}
                     type="password"
                     placeholder="Password"
+                    required
                   />
                   {errors.password ? <span>{errors.password}</span> : ""}
                 </fieldset>
