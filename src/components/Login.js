@@ -1,5 +1,5 @@
 import { Component } from "react";
-import { Link } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
 import { validateEmail, validatePassword } from "./Register";
 
 class Login extends Component {
@@ -27,7 +27,7 @@ class Login extends Component {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ user: user }),
       };
-      fetch("/api/users", requestOptions)
+      fetch("/api/users/login", requestOptions)
         .then((response) => response.json())
         .then((data) => this.setState({ postResponse: data }));
     }
@@ -64,6 +64,11 @@ class Login extends Component {
   };
   render() {
     const errors = this.state.errors;
+    const postResponse = this.state.postResponse;
+
+    if (postResponse?.user) {
+      return <Redirect to="/" />;
+    }
 
     return (
       <div className="auth-page">
@@ -74,8 +79,10 @@ class Login extends Component {
               <p className="text-xs-center">
                 <Link to="/login">Need an account?</Link>
               </p>
-
-              <form>
+              <p className="server-error">
+                {postResponse?.errors?.body[0] || ""}
+              </p>
+              <form onSubmit={this.handleSubmit}>
                 <fieldset className="form-group">
                   <input
                     onChange={this.handleChange}

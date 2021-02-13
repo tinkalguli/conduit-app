@@ -1,5 +1,5 @@
 import { Component } from "react";
-import { Link } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
 
 class Register extends Component {
   constructor(props) {
@@ -73,6 +73,11 @@ class Register extends Component {
   };
   render() {
     const errors = this.state.errors;
+    const postResponse = this.state.postResponse;
+
+    if (postResponse?.user) {
+      return <Redirect to="/" />;
+    }
 
     return (
       <div className="auth-page">
@@ -83,7 +88,11 @@ class Register extends Component {
               <p className="text-xs-center">
                 <Link to="/login">Have an account?</Link>
               </p>
-
+              <p className="server-error">
+                {postResponse?.errors?.body[0]
+                  ? getDuplicationError(postResponse?.errors?.body[0])
+                  : ""}
+              </p>
               <form onSubmit={this.handleSubmit}>
                 <fieldset className="form-group">
                   <input
@@ -158,6 +167,26 @@ export function validateEmail(email) {
 export function validatePassword(password) {
   const re = /^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9]+)$/;
   return re.test(password) && password.length >= 6;
+}
+
+function getDuplicationError(error) {
+  let errorArr = [];
+  if (error.includes(",")) {
+    errorArr = error.split(",");
+  } else {
+    errorArr.push(error);
+  }
+
+  let fieldNames =
+    errorArr.map((val, i) => {
+      return i ? val.split(":")[0] : val.split(":")[1];
+    }) + "";
+  if (fieldNames.length > 1) {
+    let fieldNamesArr = fieldNames.split("");
+    fieldNamesArr[fieldNames.lastIndexOf(",")] = " and ";
+    fieldNames = fieldNamesArr.join("");
+  }
+  return `${fieldNames} is already in use`;
 }
 
 export default Register;

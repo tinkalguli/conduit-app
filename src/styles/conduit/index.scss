@@ -259,6 +259,11 @@ footer {
   font-size: 0.8rem !important;
 }
 
+.server-error {
+  color: #f00;
+  text-align: center;
+}
+
 // Import all of our SCSS files
 @import "_home.scss";
 @import "_article.scss";
