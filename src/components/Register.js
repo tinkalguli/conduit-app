@@ -44,7 +44,7 @@ class Register extends Component {
       const requestOptions = {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user: user }),
+        body: JSON.stringify({ user }),
       };
       fetch("/api/users", requestOptions)
         .then((response) => response.json())
@@ -62,28 +62,25 @@ class Register extends Component {
 
     switch (name) {
       case "username":
-        errors.username =
-          value.length === 0
-            ? "Username is required"
-            : !validateUsername(value)
-            ? "Username must be atleast 6 characters"
-            : "";
+        errors.username = !value.length
+          ? "Username is required"
+          : !validateUsername(value)
+          ? "Username must be atleast 6 characters"
+          : "";
         break;
       case "email":
-        errors.email =
-          value.length === 0
-            ? "Email is required"
-            : !validateEmail(value)
-            ? "Email is invalid"
-            : "";
+        errors.email = !value.length
+          ? "Email is required"
+          : !validateEmail(value)
+          ? "Email is invalid"
+          : "";
         break;
       case "password":
-        errors.password =
-          value.length === 0
-            ? "Password is required"
-            : !validatePassword(value)
-            ? "Password must contain a letter, a number and atleast 6 characters"
-            : "";
+        errors.password = !value.length
+          ? "Password is required"
+          : !validatePassword(value)
+          ? "Password must contain a letter, a number and atleast 6 characters"
+          : "";
         break;
       default:
         break;
@@ -95,8 +92,7 @@ class Register extends Component {
     });
   };
   render() {
-    const errors = this.state.errors;
-    const postResponse = this.state.postResponse;
+    const { username, email, password, errors, postResponse } = this.state;
 
     if (postResponse?.user) {
       return <Redirect to="/" />;
@@ -121,7 +117,7 @@ class Register extends Component {
                   <input
                     onChange={this.handleChange}
                     name="username"
-                    value={this.state.username}
+                    value={username}
                     className={`form-control form-control-lg ${
                       errors.username && "error"
                     }`}
@@ -139,7 +135,7 @@ class Register extends Component {
                   <input
                     onChange={this.handleChange}
                     name="email"
-                    value={this.state.email}
+                    value={email}
                     className={`form-control form-control-lg ${
                       errors.email && "error"
                     }`}
@@ -147,13 +143,17 @@ class Register extends Component {
                     placeholder="Email"
                     required
                   />
-                  {errors.email ? <span>{errors.email}</span> : ""}
+                  {errors.email ? (
+                    <span className="error-msg">{errors.email}</span>
+                  ) : (
+                    ""
+                  )}
                 </fieldset>
                 <fieldset className="form-group">
                   <input
                     onChange={this.handleChange}
                     name="password"
-                    value={this.state.password}
+                    value={password}
                     className={`form-control form-control-lg ${
                       errors.password && "error"
                     }`}
@@ -161,7 +161,11 @@ class Register extends Component {
                     placeholder="Password"
                     required
                   />
-                  {errors.password ? <span>{errors.password}</span> : ""}
+                  {errors.password ? (
+                    <span className="error-msg">{errors.password}</span>
+                  ) : (
+                    ""
+                  )}
                 </fieldset>
                 <button
                   type="submit"

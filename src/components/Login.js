@@ -43,7 +43,7 @@ class Login extends Component {
       const requestOptions = {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user: user }),
+        body: JSON.stringify({ user }),
       };
       fetch("/api/users/login", requestOptions)
         .then((response) => response.json())
@@ -61,20 +61,18 @@ class Login extends Component {
 
     switch (name) {
       case "email":
-        errors.email =
-          value.length === 0
-            ? "Email is required"
-            : !validateEmail(value)
-            ? "Email is invalid"
-            : "";
+        errors.email = !value.length
+          ? "Email is required"
+          : !validateEmail(value)
+          ? "Email is invalid"
+          : "";
         break;
       case "password":
-        errors.password =
-          value.length === 0
-            ? "Password is required"
-            : !validatePassword(value)
-            ? "Password must contain a letter, a number and atleast 6 characters"
-            : "";
+        errors.password = !value.length
+          ? "Password is required"
+          : !validatePassword(value)
+          ? "Password must contain a letter, a number and atleast 6 characters"
+          : "";
         break;
       default:
         break;
@@ -86,8 +84,7 @@ class Login extends Component {
     });
   };
   render() {
-    const errors = this.state.errors;
-    const postResponse = this.state.postResponse;
+    const { email, password, errors, postResponse } = this.state;
 
     if (postResponse?.user) {
       return <Redirect to="/" />;
@@ -110,7 +107,7 @@ class Login extends Component {
                   <input
                     onChange={this.handleChange}
                     name="email"
-                    value={this.state.email}
+                    value={email}
                     className={`form-control form-control-lg ${
                       errors.email && "error"
                     }`}
@@ -118,13 +115,17 @@ class Login extends Component {
                     placeholder="Email"
                     required
                   />
-                  {errors.email ? <span>{errors.email}</span> : ""}
+                  {errors.email ? (
+                    <span className="error-msg">{errors.email}</span>
+                  ) : (
+                    ""
+                  )}
                 </fieldset>
                 <fieldset className="form-group">
                   <input
                     onChange={this.handleChange}
                     name="password"
-                    value={this.state.password}
+                    value={password}
                     className={`form-control form-control-lg ${
                       errors.password && "error"
                     }`}
@@ -132,7 +133,11 @@ class Login extends Component {
                     placeholder="Password"
                     required
                   />
-                  {errors.password ? <span>{errors.password}</span> : ""}
+                  {errors.password ? (
+                    <span className="error-msg">{errors.password}</span>
+                  ) : (
+                    ""
+                  )}
                 </fieldset>
                 <button className="btn btn-lg btn-primary pull-xs-right">
                   Sign in

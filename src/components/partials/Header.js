@@ -8,11 +8,11 @@ function Header(props) {
           conduit
         </Link>
         <ul className="nav navbar-nav pull-xs-right">
-          {/* <li className="nav-item">
+          <li className="nav-item">
             <NavLink className="nav-link" to="/editor">
-              <i className="ion-compose">📝</i>&nbsp;New Post
+              <span className="ion-compose">📝</span>&nbsp;New Post
             </NavLink>
-          </li> */}
+          </li>
           <li className="nav-item">
             <NavLink
               className="nav-link"

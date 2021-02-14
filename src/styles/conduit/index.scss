@@ -2,6 +2,16 @@
 $enable-flex: true;
 $enable-grid-classes: true;
 
+img {
+  width: 100%;
+}
+
+pre {
+  background: #ddd;
+  padding: 1rem;
+  border-radius: 0.5rem;
+}
+
 // CONDUIT STYLES //
 $font-family-logo: "Titillium Web", sans-serif !default;
 .logo-font {

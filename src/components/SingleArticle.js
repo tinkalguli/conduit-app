@@ -4,6 +4,7 @@ import moment from "moment";
 import Loader from "./partials/loader/Loader";
 import TagPills from "./partials/TagPills";
 import Comment from "./partials/Comment";
+import ReactMarkdown from "react-markdown";
 
 class SingleArticle extends Component {
   constructor(props) {
@@ -30,12 +31,12 @@ class SingleArticle extends Component {
     }
 
     return (
-      <main class="article-page">
-        <section class="banner">
-          <div class="container">
+      <main className="article-page">
+        <section className="banner">
+          <div className="container">
             <h1>{article.title}</h1>
 
-            <div class="article-meta">
+            <div className="article-meta">
               <Link to="profile">
                 <img
                   src={
@@ -45,40 +46,41 @@ class SingleArticle extends Component {
                   alt="avatar"
                 />
               </Link>
-              <div class="info">
-                <Link to="profile" class="author">
+              <div className="info">
+                <Link to="profile" className="author">
                   {article.author.username}
                 </Link>
-                <span class="date">
+                <span className="date">
                   {moment(article.createdAt).format("dddd, MMMM Do YYYY")}
                 </span>
               </div>
-              <button class="btn btn-sm btn-outline-secondary">
-                <span class="ion-plus-round">➕️</span>
+              <button className="btn btn-sm btn-outline-secondary">
+                <span className="ion-plus-round">➕️</span>
                 &nbsp; Follow {article.author.username}{" "}
               </button>
               &nbsp;&nbsp;
-              <button class="btn btn-sm btn-outline-primary">
-                <span class="ion-heart">💚</span>
+              <button className="btn btn-sm btn-outline-primary">
+                <span className="ion-heart">💚</span>
                 &nbsp; Favorite Article{" "}
-                <span class="counter">({article.favoritesCount})</span>
+                <span className="counter">({article.favoritesCount})</span>
               </button>
             </div>
           </div>
         </section>
 
-        <section class="container page">
-          <div class="row article-content">
-            <div class="col-md-12">
-              <p>{article.body}</p>
+        <section className="container page">
+          <div className="row article-content">
+            <div className="col-md-12">
+              {/* <p>{}</p> */}
+              <ReactMarkdown source={article.body} />
               <TagPills tagList={article.tagList} />
             </div>
           </div>
 
           <hr />
 
-          <div class="article-actions">
-            <div class="article-meta">
+          <div className="article-actions">
+            <div className="article-meta">
               <Link to="profile">
                 <img
                   src={
@@ -88,23 +90,23 @@ class SingleArticle extends Component {
                   alt="avatar"
                 />
               </Link>
-              <div class="info">
-                <Link to="profile" class="author">
+              <div className="info">
+                <Link to="profile" className="author">
                   {article.author.username}
                 </Link>
-                <span class="date">
+                <span className="date">
                   {moment(article.createdAt).format("dddd, MMMM Do YYYY")}
                 </span>
               </div>
-              <button class="btn btn-sm btn-outline-secondary">
-                <span class="ion-plus-round">➕️</span>
+              <button className="btn btn-sm btn-outline-secondary">
+                <span className="ion-plus-round">➕️</span>
                 &nbsp; Follow {article.author.username}{" "}
               </button>
               &nbsp;&nbsp;
-              <button class="btn btn-sm btn-outline-primary">
-                <span class="ion-heart">💚</span>
+              <button className="btn btn-sm btn-outline-primary">
+                <span className="ion-heart">💚</span>
                 &nbsp; Favorite Article{" "}
-                <span class="counter">({article.favoritesCount})</span>
+                <span className="counter">({article.favoritesCount})</span>
               </button>
             </div>
           </div>

@@ -3,48 +3,50 @@ import { Component } from "react";
 class Comment extends Component {
   render() {
     return (
-      <div class="row">
-        <div class="col-xs-12 col-md-8 offset-md-2">
-          <div class="card">
-            <div class="card-block">
-              <p class="card-text">
+      <div className="row">
+        <div className="col-xs-12 col-md-8 offset-md-2">
+          <div className="card">
+            <div className="card-block">
+              <p className="card-text">
                 With supporting text below as a natural lead-in to
                 additional content.
               </p>
             </div>
-            <div class="card-footer">
-              <a href="profile.html" class="comment-author">
+            <div className="card-footer">
+              <a href="profile.html" className="comment-author">
                 <img
                   src="http://i.imgur.com/Qr71crq.jpg"
-                  class="comment-author-img"
+                  className="comment-author-img"
                 />
               </a>
               &nbsp;
-              <a href="profile.html" class="comment-author">
+              <a href="profile.html" className="comment-author">
                 Jacob Schmidt
               </a>
-              <span class="date-posted">Dec 29th</span>
-              <span class="mod-options">
-                <i class="ion-edit"></i>
-                <i class="ion-trash-a"></i>
+              <span className="date-posted">Dec 29th</span>
+              <span className="mod-options">
+                <i className="ion-edit"></i>
+                <i className="ion-trash-a"></i>
               </span>
             </div>
           </div>
 
-          <form class="card comment-form">
-            <div class="card-block">
+          <form className="card comment-form">
+            <div className="card-block">
               <textarea
-                class="form-control"
+                className="form-control"
                 placeholder="Write a comment..."
                 rows="3"
               ></textarea>
             </div>
-            <div class="card-footer">
+            <div className="card-footer">
               <img
                 src="http://i.imgur.com/Qr71crq.jpg"
-                class="comment-author-img"
+                className="comment-author-img"
               />
-              <button class="btn btn-sm btn-primary">Post Comment</button>
+              <button className="btn btn-sm btn-primary">
+                Post Comment
+              </button>
             </div>
           </form>
         </div>

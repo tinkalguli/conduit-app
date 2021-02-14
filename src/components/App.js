@@ -5,6 +5,7 @@ import Footer from "./partials/Footer";
 import Login from "./Login";
 import Register from "./Register";
 import SingleArticle from "./SingleArticle";
+import NewArticle from "./NewArticle";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
       <Route path="/register">
         <Register />
       </Route>
+      <Route path="/editor" component={NewArticle} />
       <Route path="/articles/:slug" component={SingleArticle} />
       <Footer />
     </>

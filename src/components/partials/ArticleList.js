@@ -66,6 +66,10 @@ class ArticleList extends Component {
       return <Loader />;
     }
 
+    if (!articleList?.length) {
+      return <h3 className="article-preview">No articles...</h3>;
+    }
+
     return (
       <>
         {articleList.map((article, i) => (

@@ -9,7 +9,7 @@ class TagList extends Component {
     };
   }
   componentDidMount() {
-    fetch(`https://mighty-oasis-08080.herokuapp.com/api/tags`)
+    fetch(`/api/tags`)
       .then((res) => res.json())
       .then((res) => {
         this.setState({
@@ -20,6 +20,10 @@ class TagList extends Component {
   render() {
     const { tagList } = this.state;
     const { activeTag, handleTagClick } = this.props;
+
+    if (!tagList?.length) {
+      return <h5>No tags...</h5>;
+    }
 
     if (!tagList) {
       return <Loader />;

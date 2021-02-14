@@ -179,6 +179,9 @@ input[type="month"] {
     display: block;
     padding-top: 0.2rem;
   }
+  & .error-msg {
+    color: #f00;
+  }
 }
 
 // Checkboxes and radios
