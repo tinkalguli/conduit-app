@@ -75,6 +75,7 @@
       .comment-author-img {
         height: 30px;
         width: 30px;
+        margin-right: 5px;
       }
     }
   }
@@ -98,13 +99,16 @@
     }
     .comment-author {
       display: inline-block;
+      margin-left: 5px;
       vertical-align: middle;
+      color: rgb(30, 128, 6);
+      font-weight: 500;
     }
     .date-posted {
       display: inline-block;
       vertical-align: middle;
       margin-left: 5px;
-      color: #bbb;
+      color: #555;
     }
 
     .mod-options {
@@ -112,8 +116,12 @@
       color: #333;
       font-size: 1rem;
 
-      i {
+      span {
         margin-left: 5px;
+        background: #fff;
+        border: 1px solid #555;
+        border-radius: 4px;
+        padding: 0.2rem;
         opacity: 0.6;
         cursor: pointer;
 

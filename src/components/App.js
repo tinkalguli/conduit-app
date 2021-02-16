@@ -6,6 +6,7 @@ import Login from "./Login";
 import Register from "./Register";
 import SingleArticle from "./SingleArticle";
 import NewArticle from "./NewArticle";
+import Settings from "./Settings";
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
         <Register />
       </Route>
       <Route path="/editor" component={NewArticle} />
+      <Route path="/settings" component={Settings} />
       <Route path="/articles/:slug" component={SingleArticle} />
       <Footer />
     </>

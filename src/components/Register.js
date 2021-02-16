@@ -1,5 +1,6 @@
 import { Component } from "react";
 import { Link, Redirect } from "react-router-dom";
+import { registerURL } from "./utility/utility";
 
 class Register extends Component {
   constructor(props) {
@@ -13,8 +14,10 @@ class Register extends Component {
         email: "",
         password: "",
       },
-      postResponse: null,
+      registeredUser: null,
       token: "",
+      requestError: "",
+      validationError: "",
     };
   }
   handleUpdateLocalStorage = () => {
@@ -46,14 +49,38 @@ class Register extends Component {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ user }),
       };
-      fetch("/api/users", requestOptions)
-        .then((response) => response.json())
-        .then((data) =>
-          this.setState(
-            () => ({ postResponse: data, token: data.user.token }),
-            this.handleUpdateLocalStorage
-          )
-        );
+
+      fetch(registerURL, requestOptions)
+        .then((res) => {
+          if (res.status !== 422 && !res.ok) {
+            throw new Error(res.statusText);
+          }
+          return res.json();
+        })
+        .then((data) => {
+          if (data.errors) {
+            const error = data.errors.body[0];
+
+            this.setState({
+              validationError: error.includes("email")
+                ? "Email is already exist"
+                : "Username is already exist",
+            });
+          } else {
+            this.setState(
+              () => ({
+                registeredUser: data.user,
+                token: data.user.token,
+              }),
+              this.handleUpdateLocalStorage
+            );
+          }
+        })
+        .catch((error) => {
+          this.setState({
+            requestError: "Not able to login",
+          });
+        });
     }
   };
   handleChange = ({ target }) => {
@@ -92,9 +119,17 @@ class Register extends Component {
     });
   };
   render() {
-    const { username, email, password, errors, postResponse } = this.state;
+    const {
+      username,
+      email,
+      password,
+      errors,
+      registeredUser,
+      validationError,
+      requestError,
+    } = this.state;
 
-    if (postResponse?.user) {
+    if (registeredUser) {
       return <Redirect to="/" />;
     }
 
@@ -107,11 +142,8 @@ class Register extends Component {
               <p className="text-xs-center">
                 <Link to="/login">Have an account?</Link>
               </p>
-              <p className="server-error">
-                {postResponse?.errors?.body[0]
-                  ? getDuplicationError(postResponse?.errors?.body[0])
-                  : ""}
-              </p>
+              <p className="server-error">{validationError}</p>
+              <p className="server-error">{requestError}</p>
               <form onSubmit={this.handleSubmit}>
                 <fieldset className="form-group">
                   <input
@@ -194,26 +226,6 @@ export function validateEmail(email) {
 export function validatePassword(password) {
   const re = /^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9]+)$/;
   return re.test(password) && password.length >= 6;
-}
-
-function getDuplicationError(error) {
-  let errorArr = [];
-  if (error.includes(",")) {
-    errorArr = error.split(",");
-  } else {
-    errorArr.push(error);
-  }
-
-  let fieldNames =
-    errorArr.map((val, i) => {
-      return i ? val.split(":")[0] : val.split(":")[1];
-    }) + "";
-  if (fieldNames.length > 1) {
-    let fieldNamesArr = fieldNames.split("");
-    fieldNamesArr[fieldNames.lastIndexOf(",")] = " and ";
-    fieldNames = fieldNamesArr.join("");
-  }
-  return `${fieldNames} is already in use`;
 }
 
 export default Register;

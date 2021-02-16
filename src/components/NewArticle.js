@@ -1,5 +1,6 @@
 import { Component } from "react";
 import { Redirect } from "react-router-dom";
+import { articleURL } from "./utility/utility";
 
 class NewArticle extends Component {
   constructor(props) {
@@ -16,6 +17,8 @@ class NewArticle extends Component {
         tagList: "",
       },
       tagInput: "",
+      createdArticle: null,
+      requestError: "",
     };
   }
   handleSubmit = (event) => {
@@ -34,13 +37,23 @@ class NewArticle extends Component {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          authorization: localStorage?.token,
+          authorization: localStorage.getItem("token"),
         },
         body: JSON.stringify({ article }),
       };
-      fetch("/api/articles", requestOptions)
-        .then((response) => response.json())
-        .then((data) => this.setState({ postResponse: data }));
+      fetch(articleURL, requestOptions)
+        .then((res) => {
+          if (!res.ok) {
+            throw new Error(res.statusText);
+          }
+          return res.json();
+        })
+        .then((data) => this.setState({ createdArticle: data.article }))
+        .catch((error) => {
+          this.setState({
+            requestError: "Not able to create the article",
+          });
+        });
     }
   };
   handleChange = ({ target }) => {
@@ -103,11 +116,12 @@ class NewArticle extends Component {
       tagList,
       errors,
       tagInput,
-      postResponse,
+      createdArticle,
+      requestError,
     } = this.state;
 
-    if (postResponse?.article) {
-      return <Redirect to={`/articles/${postResponse.article.slug}`} />;
+    if (createdArticle) {
+      return <Redirect to={`/articles/${createdArticle.slug}`} />;
     }
 
     return (
@@ -116,6 +130,7 @@ class NewArticle extends Component {
           <div className="row">
             <div className="col-md-10 offset-md-1 col-xs-12">
               <form onSubmit={this.handleSubmit}>
+                <p className="server-error">{requestError}</p>
                 <fieldset className="form-group">
                   <input
                     onChange={this.handleChange}

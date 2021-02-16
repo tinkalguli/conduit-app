@@ -5,26 +5,42 @@ import Loader from "./partials/loader/Loader";
 import TagPills from "./partials/TagPills";
 import Comment from "./partials/Comment";
 import ReactMarkdown from "react-markdown";
+import { articleURL } from "./utility/utility";
 
 class SingleArticle extends Component {
   constructor(props) {
     super(props);
     this.state = {
       article: null,
+      error: "",
     };
   }
   componentDidMount() {
     const slug = this.props.match.params.slug;
-    fetch(`/api/articles/${slug}`)
-      .then((res) => res.json())
+    fetch(`${articleURL}/${slug}`)
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(res.statusText);
+        }
+        return res.json();
+      })
       .then((res) => {
         this.setState({
           article: res.article,
         });
+      })
+      .catch((error) => {
+        this.setState({
+          error: "Not able to fetch the article",
+        });
       });
   }
   render() {
-    const { article } = this.state;
+    const { article, error } = this.state;
+
+    if (error) {
+      return <center className="article-preview">{error}</center>;
+    }
 
     if (!article) {
       return <Loader />;
@@ -71,7 +87,6 @@ class SingleArticle extends Component {
         <section className="container page">
           <div className="row article-content">
             <div className="col-md-12">
-              {/* <p>{}</p> */}
               <ReactMarkdown source={article.body} />
               <TagPills tagList={article.tagList} />
             </div>
@@ -110,7 +125,7 @@ class SingleArticle extends Component {
               </button>
             </div>
           </div>
-          <Comment />
+          <Comment slug={article.slug} />
         </section>
       </main>
     );

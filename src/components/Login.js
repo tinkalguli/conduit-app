@@ -1,6 +1,7 @@
 import { Component } from "react";
 import { Link, Redirect } from "react-router-dom";
 import { validateEmail, validatePassword } from "./Register";
+import { loginURL } from "./utility/utility";
 
 class Login extends Component {
   constructor(props) {
@@ -12,8 +13,10 @@ class Login extends Component {
         email: "",
         password: "",
       },
-      postResponse: null,
+      logedInUser: null,
       token: "",
+      requestError: "",
+      validationError: "",
     };
   }
   handleUpdateLocalStorage = () => {
@@ -45,14 +48,30 @@ class Login extends Component {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ user }),
       };
-      fetch("/api/users/login", requestOptions)
-        .then((response) => response.json())
-        .then((data) =>
-          this.setState(
-            () => ({ postResponse: data, token: data?.user?.token }),
-            this.handleUpdateLocalStorage
-          )
-        );
+      fetch(loginURL, requestOptions)
+        .then((res) => {
+          if (res.status !== 422 && !res.ok) {
+            throw new Error(res.statusText);
+          }
+          return res.json();
+        })
+        .then((data) => {
+          if (data.errors) {
+            this.setState({
+              validationError: "Invalid email or password",
+            });
+          } else {
+            this.setState(
+              () => ({ logedInUser: data.user, token: data.user.token }),
+              this.handleUpdateLocalStorage
+            );
+          }
+        })
+        .catch((error) => {
+          this.setState({
+            requestError: "Not able to login",
+          });
+        });
     }
   };
   handleChange = ({ target }) => {
@@ -84,9 +103,16 @@ class Login extends Component {
     });
   };
   render() {
-    const { email, password, errors, postResponse } = this.state;
+    const {
+      email,
+      password,
+      errors,
+      logedInUser,
+      validationError,
+      requestError,
+    } = this.state;
 
-    if (postResponse?.user) {
+    if (logedInUser) {
       return <Redirect to="/" />;
     }
 
@@ -99,9 +125,8 @@ class Login extends Component {
               <p className="text-xs-center">
                 <Link to="/login">Need an account?</Link>
               </p>
-              <p className="server-error">
-                {postResponse?.errors?.body[0] || ""}
-              </p>
+              <p className="server-error">{validationError}</p>
+              <p className="server-error">{requestError}</p>
               <form onSubmit={this.handleSubmit}>
                 <fieldset className="form-group">
                   <input

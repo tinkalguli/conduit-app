@@ -3,42 +3,53 @@ import Loader from "./loader/Loader";
 import moment from "moment";
 import { Link } from "react-router-dom";
 import TagPills from "./TagPills";
+import Pagination from "./Pagination";
+import { articleURL, feedURL } from "../utility/utility";
 
 class ArticleList extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      articleList: null,
-      totalArticlesCount: 0,
-      activePage: 1,
-    };
-  }
-  updateData = (data) => {
+  state = {
+    articleList: null,
+    totalArticlesCount: null,
+    activePage: 1,
+    error: "",
+  };
+  updateData = (dataName) => {
     const { activeFeed } = this.props;
-    let urlPart = "";
-    let queryPart =
-      data === "articleList"
-        ? `limit=10&offset=${10 * (this.state.activePage - 1)}`
+    const { activePage } = this.state;
+    let url = articleURL;
+    let query =
+      dataName === "articleList"
+        ? `limit=10&offset=${10 * (activePage - 1)}`
         : "";
 
     if (activeFeed === "personal") {
-      urlPart = "/feed";
-    } else if (activeFeed !== "personal" && activeFeed !== "global") {
-      queryPart += `&tag=${activeFeed}`;
+      url = feedURL;
+    } else if (activeFeed !== "global") {
+      query += `&tag=${activeFeed}`;
     }
 
-    try {
-      fetch(`/api/articles${urlPart}?${queryPart}`)
-        .then((res) => res.json())
-        .then((res) => {
-          this.setState({
-            [data]:
-              data === "articleList" ? res.articles : res.articlesCount,
-          });
+    fetch(`${url}?${query}`, {
+      authorization: localStorage.getItem("token"),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(res.statusText);
+        }
+        return res.json();
+      })
+      .then((data) => {
+        this.setState({
+          [dataName]:
+            dataName === "articleList"
+              ? data.articles
+              : data.articlesCount,
         });
-    } catch (error) {
-      console.error(error.toString());
-    }
+      })
+      .catch((error) => {
+        this.setState({
+          error: "Not able to fetch articles",
+        });
+      });
   };
   componentDidMount() {
     this.updateData("articleList");
@@ -60,9 +71,18 @@ class ArticleList extends Component {
     });
   };
   render() {
-    const { articleList, totalArticlesCount, activePage } = this.state;
+    const {
+      articleList,
+      totalArticlesCount,
+      activePage,
+      error,
+    } = this.state;
 
-    if (!articleList) {
+    if (error) {
+      return <p className="article-preview">{error}</p>;
+    }
+
+    if (!articleList && !error) {
       return <Loader />;
     }
 
@@ -105,23 +125,12 @@ class ArticleList extends Component {
             </Link>
           </div>
         ))}
-        <ul className="pagination">
-          {totalArticlesCount
-            ? [...Array(Math.ceil(totalArticlesCount / 10))].map(
-                (_, i) => (
-                  <li
-                    onClick={() => this.handlePageClick(i + 1)}
-                    className={`page-item ng-scope page-link ng-binding pagination-btn ${
-                      activePage === i + 1 ? "active" : ""
-                    }`}
-                    key={i}
-                  >
-                    {i + 1}
-                  </li>
-                )
-              )
-            : ""}
-        </ul>
+        <Pagination
+          activePage={activePage}
+          totalArticlesCount={totalArticlesCount}
+          handlePageClick={this.handlePageClick}
+          error={error}
+        />
       </>
     );
   }

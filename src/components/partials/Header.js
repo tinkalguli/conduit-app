@@ -14,6 +14,11 @@ function Header(props) {
             </NavLink>
           </li>
           <li className="nav-item">
+            <NavLink className="nav-link" to="/settings">
+              <span className="ion-compose">⚙️</span>&nbsp;Settings
+            </NavLink>
+          </li>
+          <li className="nav-item">
             <NavLink
               className="nav-link"
               activeClassName="active"
