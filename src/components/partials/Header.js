@@ -46,16 +46,16 @@ function Header(props) {
               Sign Up
             </NavLink>
           </li>
-          {/* <li className="nav-item">
+          <li className="nav-item">
             <NavLink className="nav-link" to="/profile">
-              <img
+              {/* <img
                 src="http://i.imgur.com/Xzm3mI0.jpg"
                 className="user-pic"
                 alt="user avatar"
-              />
-              ericsimons
+              /> */}
+              tinkal
             </NavLink>
-          </li> */}
+          </li>
         </ul>
       </div>
     </nav>

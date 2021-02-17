@@ -6,6 +6,7 @@ import {
   validateEmail,
   validatePassword,
 } from "./Register";
+import Loader from "./partials/loader/Loader";
 
 class Settings extends Component {
   constructor(props) {
@@ -44,6 +45,7 @@ class Settings extends Component {
       .then((data) => {
         const currentUser = data.user;
         this.setState({
+          currentUser,
           username: currentUser?.username,
           email: currentUser?.email,
           bio: currentUser?.bio,
@@ -134,13 +136,18 @@ class Settings extends Component {
       image,
       errors,
       updatedUser,
+      currentUser,
       fetchRequestError,
       updateRequestError,
     } = this.state;
 
-    // if (updatedUser) {
-    //   return <Redirect to="/profie" />;
-    // }
+    if (updatedUser) {
+      return <Redirect to="/profile" />;
+    }
+
+    if (!currentUser) {
+      return <Loader />;
+    }
 
     return (
       <div className="settings-page">

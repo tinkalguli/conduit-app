@@ -14,7 +14,7 @@ class ArticleList extends Component {
     error: "",
   };
   updateData = (dataName) => {
-    const { activeFeed } = this.props;
+    const { activeFeed, username } = this.props;
     const { activePage } = this.state;
     let url = articleURL;
     let query =
@@ -24,12 +24,14 @@ class ArticleList extends Component {
 
     if (activeFeed === "personal") {
       url = feedURL;
+    } else if (activeFeed === "favorited") {
+      query += `&favorited=${username}`;
     } else if (activeFeed !== "global") {
       query += `&tag=${activeFeed}`;
     }
 
     fetch(`${url}?${query}`, {
-      authorization: localStorage.getItem("token"),
+      headers: { authorization: localStorage.getItem("token") },
     })
       .then((res) => {
         if (!res.ok) {
