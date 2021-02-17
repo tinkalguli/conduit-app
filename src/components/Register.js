@@ -214,7 +214,7 @@ class Register extends Component {
   }
 }
 
-function validateUsername(name) {
+export function validateUsername(name) {
   return name.length >= 6;
 }
 

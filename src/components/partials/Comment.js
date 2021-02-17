@@ -2,28 +2,41 @@ import { Component } from "react";
 import Loader from "./loader/Loader";
 import moment from "moment";
 import { Link } from "react-router-dom";
+import { articleURL } from "../utility/utility";
 
 class Comment extends Component {
   constructor(props) {
     super(props);
     this.state = {
       comments: null,
+      requestError: "",
     };
   }
   componentDidMount() {
     const slug = this.props.slug;
-    fetch(`/api/articles/${slug}/comments`, {
-      authorization: localStorage?.token,
+
+    fetch(`${articleURL}/${slug}/comments`, {
+      authorization: localStorage.getItem("token"),
     })
-      .then((res) => res.json())
       .then((res) => {
+        if (!res.ok) {
+          throw new Error(res.statusText);
+        }
+        return res.json();
+      })
+      .then((data) => {
         this.setState({
-          comments: res.comments,
+          comments: data.comments,
+        });
+      })
+      .catch((error) => {
+        this.setState({
+          requestError: "Not able to fetch the comments",
         });
       });
   }
   render() {
-    const { comments } = this.state;
+    const { comments, requestError } = this.state;
 
     return (
       <div className="row">
@@ -47,14 +60,18 @@ class Comment extends Component {
               </button>
             </div>
           </form>
-          {Comments(comments)}
+          {Comments(comments, requestError)}
         </div>
       </div>
     );
   }
 }
 
-function Comments(comments) {
+function Comments(comments, requestError) {
+  if (requestError) {
+    return <p className="article-preview">{requestError}</p>;
+  }
+
   if (!comments) {
     return <Loader />;
   }
