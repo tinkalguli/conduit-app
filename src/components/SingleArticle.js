@@ -1,5 +1,5 @@
 import { Component } from "react";
-import { Link } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
 import moment from "moment";
 import Loader from "./partials/loader/Loader";
 import TagPills from "./partials/TagPills";
@@ -13,20 +13,23 @@ class SingleArticle extends Component {
     this.state = {
       article: null,
       error: "",
+      deletedArticle: null,
     };
   }
   componentDidMount() {
     const slug = this.props.match.params.slug;
-    fetch(`${articleURL}/${slug}`)
+    fetch(`${articleURL}/${slug}`, {
+      headers: { authorization: localStorage.getItem("token") },
+    })
       .then((res) => {
         if (!res.ok) {
           throw new Error(res.statusText);
         }
         return res.json();
       })
-      .then((res) => {
+      .then((data) => {
         this.setState({
-          article: res.article,
+          article: data.article,
         });
       })
       .catch((error) => {
@@ -35,8 +38,34 @@ class SingleArticle extends Component {
         });
       });
   }
+  handleDeleteArticle = () => {
+    const slug = this.props.match.params.slug;
+    const requestOptions = {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        authorization: localStorage.getItem("token"),
+      },
+    };
+    fetch(`${articleURL}/${slug}`, requestOptions)
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(res.statusText);
+        }
+        return res.json();
+      })
+      .then((data) => this.setState({ deletedArticle: data }));
+  };
+  handleFavoriteClick = () => {
+    const { article } = this.state;
+    updateFavoriteArticle(article.slug, article.favorited);
+  };
   render() {
-    const { article, error } = this.state;
+    const { article, error, deletedArticle } = this.state;
+
+    if (deletedArticle) {
+      return <Redirect to="/" />;
+    }
 
     if (error) {
       return <center className="article-preview">{error}</center>;
@@ -75,10 +104,30 @@ class SingleArticle extends Component {
                 &nbsp; Follow {article.author.username}{" "}
               </button>
               &nbsp;&nbsp;
-              <button className="btn btn-sm btn-outline-primary">
+              <button
+                onClick={this.handleFavoriteClick}
+                className={`btn btn-sm btn-outline-primary ${
+                  article.favorited ? "active" : ""
+                }`}
+              >
                 <span className="ion-heart">💚</span>
                 &nbsp; Favorite Article{" "}
                 <span className="counter">({article.favoritesCount})</span>
+              </button>
+              <Link
+                to="/editor"
+                className="btn btn-outline-secondary btn-sm"
+              >
+                <span>✏️</span>
+                &nbsp;Edit Article{" "}
+              </Link>
+              &nbsp;&nbsp;
+              <button
+                onClick={this.handleDeleteArticle}
+                className="btn btn-outline-danger btn-sm"
+              >
+                <span>🗑</span>
+                &nbsp; Delete Article{" "}
               </button>
             </div>
           </div>
@@ -113,7 +162,7 @@ class SingleArticle extends Component {
                   {moment(article.createdAt).format("dddd, MMMM Do YYYY")}
                 </span>
               </div>
-              <button className="btn btn-sm btn-outline-secondary">
+              {/* <button className="btn btn-sm btn-outline-secondary">
                 <span className="ion-plus-round">➕️</span>
                 &nbsp; Follow {article.author.username}{" "}
               </button>
@@ -122,6 +171,18 @@ class SingleArticle extends Component {
                 <span className="ion-heart">💚</span>
                 &nbsp; Favorite Article{" "}
                 <span className="counter">({article.favoritesCount})</span>
+              </button> */}
+              <Link
+                to="/editor"
+                className="btn btn-outline-secondary btn-sm"
+              >
+                <span>✏️</span>
+                &nbsp;Edit Article{" "}
+              </Link>
+              &nbsp;&nbsp;
+              <button className="btn btn-outline-danger btn-sm">
+                <span>🗑</span>
+                &nbsp; Delete Article{" "}
               </button>
             </div>
           </div>
@@ -130,6 +191,26 @@ class SingleArticle extends Component {
       </main>
     );
   }
+}
+
+function updateFavoriteArticle(slug, isFavorited) {
+  let requestOptions;
+  if (!isFavorited) {
+    requestOptions = {
+      method: "POST",
+      headers: {
+        authorization: localStorage.getItem("token"),
+      },
+    };
+  } else {
+    requestOptions = {
+      method: "DELETE",
+      headers: {
+        authorization: localStorage.getItem("token"),
+      },
+    };
+  }
+  fetch(`${articleURL}/${slug}/favorite`, requestOptions);
 }
 
 export default SingleArticle;
