@@ -3,23 +3,20 @@ import { Link, Redirect } from "react-router-dom";
 import { registerURL } from "./utility/utility";
 
 class Register extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
+  state = {
+    username: "",
+    email: "",
+    password: "",
+    errors: {
       username: "",
       email: "",
       password: "",
-      errors: {
-        username: "",
-        email: "",
-        password: "",
-      },
-      registeredUser: null,
-      token: "",
-      requestError: "",
-      validationError: "",
-    };
-  }
+    },
+    registeredUser: null,
+    token: "",
+    requestError: "",
+    validationError: "",
+  };
   handleUpdateLocalStorage = () => {
     localStorage.setItem("token", this.state.token);
   };
@@ -86,32 +83,7 @@ class Register extends Component {
   handleChange = ({ target }) => {
     const { name, value } = target;
     let errors = this.state.errors;
-
-    switch (name) {
-      case "username":
-        errors.username = !value.length
-          ? "Username is required"
-          : !validateUsername(value)
-          ? "Username must be atleast 6 characters"
-          : "";
-        break;
-      case "email":
-        errors.email = !value.length
-          ? "Email is required"
-          : !validateEmail(value)
-          ? "Email is invalid"
-          : "";
-        break;
-      case "password":
-        errors.password = !value.length
-          ? "Password is required"
-          : !validatePassword(value)
-          ? "Password must contain a letter, a number and atleast 6 characters"
-          : "";
-        break;
-      default:
-        break;
-    }
+    validateUserInfo(value, name, errors);
 
     this.setState({
       [name]: value,
@@ -214,18 +186,46 @@ class Register extends Component {
   }
 }
 
-export function validateUsername(name) {
+function validateUsername(name) {
   return name.length >= 6;
 }
 
-export function validateEmail(email) {
+function validateEmail(email) {
   const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
   return re.test(email);
 }
 
-export function validatePassword(password) {
+function validatePassword(password) {
   const re = /^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9]+)$/;
   return re.test(password) && password.length >= 6;
+}
+
+export function validateUserInfo(value, name, errors) {
+  switch (name) {
+    case "username":
+      errors.username = !value.length
+        ? "Username is required"
+        : !validateUsername(value)
+        ? "Username must be atleast 6 characters"
+        : "";
+      break;
+    case "email":
+      errors.email = !value.length
+        ? "Email is required"
+        : !validateEmail(value)
+        ? "Email is invalid"
+        : "";
+      break;
+    case "password":
+      errors.password = !value.length
+        ? "Password is required"
+        : !validatePassword(value)
+        ? "Password must contain a letter, a number and atleast 6 characters"
+        : "";
+      break;
+    default:
+      break;
+  }
 }
 
 export default Register;

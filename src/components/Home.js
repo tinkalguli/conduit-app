@@ -3,13 +3,10 @@ import ArticleList from "./partials/ArticleList";
 import TagList from "./partials/TagList";
 
 class Home extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      activeFeed: "global",
-      activeTag: "",
-    };
-  }
+  state = {
+    activeFeed: "global",
+    activeTag: "",
+  };
   handleFeedClick = (activeFeed) => {
     if (activeFeed !== this.state.activeTag) {
       this.setState({

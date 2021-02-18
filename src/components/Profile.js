@@ -5,14 +5,11 @@ import { currentUserURL } from "./utility/utility";
 import Loader from "./partials/loader/Loader";
 
 class Profile extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      activeFeed: "personal",
-      requestError: "",
-      currentUser: null,
-    };
-  }
+  state = {
+    activeFeed: "personal",
+    requestError: "",
+    currentUser: null,
+  };
   componentDidMount() {
     fetch(currentUserURL, {
       headers: { authorization: localStorage.getItem("token") },

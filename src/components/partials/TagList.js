@@ -3,13 +3,10 @@ import Loader from "./loader/Loader";
 import { tagsURL } from "../utility/utility";
 
 class TagList extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      tagList: null,
-      error: "",
-    };
-  }
+  state = {
+    tagList: null,
+    error: "",
+  };
   componentDidMount() {
     fetch(tagsURL)
       .then((res) => {

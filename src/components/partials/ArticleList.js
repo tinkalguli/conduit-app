@@ -10,16 +10,19 @@ class ArticleList extends Component {
   state = {
     articleList: null,
     totalArticlesCount: null,
-    activePage: 1,
+    activePageIndex: 0,
+    articlePerPage: 10,
     error: "",
   };
   updateData = (dataName) => {
     const { activeFeed, username } = this.props;
-    const { activePage } = this.state;
+    const { activePageIndex, articlePerPage } = this.state;
     let url = articleURL;
     let query =
       dataName === "articleList"
-        ? `limit=10&offset=${10 * (activePage - 1)}`
+        ? `limit=${articlePerPage}&offset=${
+            articlePerPage * activePageIndex
+          }`
         : "";
 
     if (activeFeed === "personal") {
@@ -60,23 +63,24 @@ class ArticleList extends Component {
   componentDidUpdate(prevProps, prevState) {
     if (
       prevProps.activeFeed !== this.props.activeFeed ||
-      prevState.activePage !== this.state.activePage
+      prevState.activePageIndex !== this.state.activePageIndex
     ) {
       this.setState({ articleList: null });
       this.updateData("articleList");
       this.updateData("totalArticlesCount");
     }
   }
-  handlePageClick = (activePage) => {
+  handlePageClick = (activePageIndex) => {
     this.setState({
-      activePage,
+      activePageIndex,
     });
   };
   render() {
     const {
       articleList,
       totalArticlesCount,
-      activePage,
+      activePageIndex,
+      articlePerPage,
       error,
     } = this.state;
 
@@ -128,7 +132,8 @@ class ArticleList extends Component {
           </div>
         ))}
         <Pagination
-          activePage={activePage}
+          articlePerPage={articlePerPage}
+          activePageIndex={activePageIndex}
           totalArticlesCount={totalArticlesCount}
           handlePageClick={this.handlePageClick}
           error={error}

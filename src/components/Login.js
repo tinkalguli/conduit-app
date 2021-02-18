@@ -1,24 +1,21 @@
 import { Component } from "react";
 import { Link, Redirect } from "react-router-dom";
-import { validateEmail, validatePassword } from "./Register";
 import { loginURL } from "./utility/utility";
+import { validateUserInfo } from "./Register";
 
 class Login extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
+  state = {
+    email: "",
+    password: "",
+    errors: {
       email: "",
       password: "",
-      errors: {
-        email: "",
-        password: "",
-      },
-      logedInUser: null,
-      token: "",
-      requestError: "",
-      validationError: "",
-    };
-  }
+    },
+    logedInUser: null,
+    token: "",
+    requestError: "",
+    validationError: "",
+  };
   handleUpdateLocalStorage = () => {
     localStorage.setItem("token", this.state.token);
   };
@@ -78,24 +75,7 @@ class Login extends Component {
     let { name, value } = target;
     let errors = this.state.errors;
 
-    switch (name) {
-      case "email":
-        errors.email = !value.length
-          ? "Email is required"
-          : !validateEmail(value)
-          ? "Email is invalid"
-          : "";
-        break;
-      case "password":
-        errors.password = !value.length
-          ? "Password is required"
-          : !validatePassword(value)
-          ? "Password must contain a letter, a number and atleast 6 characters"
-          : "";
-        break;
-      default:
-        break;
-    }
+    validateUserInfo(value, name, errors);
 
     this.setState({
       [name]: value,

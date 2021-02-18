@@ -1,33 +1,26 @@
 import { Component } from "react";
 import { Redirect } from "react-router-dom";
 import { currentUserURL } from "./utility/utility";
-import {
-  validateUsername,
-  validateEmail,
-  validatePassword,
-} from "./Register";
+import { validateUserInfo } from "./Register";
 import Loader from "./partials/loader/Loader";
 
 class Settings extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      currentUser: null,
-      fetchRequestError: "",
-      updatedUser: null,
-      updateRequestError: "",
+  state = {
+    currentUser: null,
+    fetchRequestError: "",
+    updatedUser: null,
+    updateRequestError: "",
+    username: "",
+    email: "",
+    password: "",
+    bio: "",
+    image: "",
+    errors: {
       username: "",
       email: "",
       password: "",
-      bio: "",
-      image: "",
-      errors: {
-        username: "",
-        email: "",
-        password: "",
-      },
-    };
-  }
+    },
+  };
   componentDidMount() {
     const requestOptions = {
       method: "GET",
@@ -96,30 +89,16 @@ class Settings extends Component {
     const { name, value } = target;
     let errors = this.state.errors;
 
-    switch (name) {
-      case "username":
-        errors.username = !value.length
-          ? "Username is required"
-          : !validateUsername(value)
-          ? "Username must be atleast 6 characters"
-          : "";
-        break;
-      case "email":
-        errors.email = !value.length
-          ? "Email is required"
-          : !validateEmail(value)
-          ? "Email is invalid"
-          : "";
-        break;
-      case "password":
-        errors.password = !value
-          ? ""
-          : !validatePassword(value)
-          ? "Password must contain a letter, a number and atleast 6 characters"
-          : "";
-        break;
-      default:
-        break;
+    if (name === "password" && !value.length) {
+      errors.password = "";
+    }
+
+    if (
+      (name === "password" && value.length) ||
+      name === "username" ||
+      name === "email"
+    ) {
+      validateUserInfo(value, name, errors);
     }
 
     this.setState({

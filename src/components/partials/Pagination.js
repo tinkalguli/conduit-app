@@ -1,13 +1,19 @@
 export default function Pagination(props) {
+  const {
+    totalArticlesCount,
+    articlePerPage,
+    activePageIndex,
+    handlePageClick,
+  } = props;
   return (
     <ul className="pagination">
-      {props.totalArticlesCount
-        ? [...Array(Math.ceil(props.totalArticlesCount / 10))].map(
+      {totalArticlesCount
+        ? [...Array(Math.ceil(totalArticlesCount / articlePerPage))].map(
             (_, i) => (
               <li
-                onClick={() => props.handlePageClick(i + 1)}
+                onClick={() => handlePageClick(i + 1)}
                 className={`page-item ng-scope page-link ng-binding pagination-btn ${
-                  props.activePage === i + 1 ? "active" : ""
+                  activePageIndex === i ? "active" : ""
                 }`}
                 key={i}
               >

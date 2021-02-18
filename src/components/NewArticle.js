@@ -3,24 +3,21 @@ import { Redirect } from "react-router-dom";
 import { articleURL } from "./utility/utility";
 
 class NewArticle extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      title: "",
+  state = {
+    title: "",
+    description: "",
+    body: "",
+    tagList: [],
+    errors: {
       description: "",
       body: "",
-      tagList: [],
-      errors: {
-        description: "",
-        body: "",
-        title: "",
-        tagList: "",
-      },
-      tagInput: "",
-      createdArticle: null,
-      requestError: "",
-    };
-  }
+      title: "",
+      tagList: "",
+    },
+    tagInput: "",
+    createdArticle: null,
+    requestError: "",
+  };
   handleSubmit = (event) => {
     event.preventDefault();
     const { title, description, body, tagList } = this.state;

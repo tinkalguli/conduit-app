@@ -6,16 +6,13 @@ import { articleURL } from "../utility/utility";
 import Spinner from "./spinner/Spinner";
 
 class Comment extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      comments: null,
-      fetchRequestError: "",
-      postRequestError: "",
-      commentBody: "",
-      createdComment: null,
-    };
-  }
+  state = {
+    comments: null,
+    fetchRequestError: "",
+    postRequestError: "",
+    commentBody: "",
+    createdComment: null,
+  };
   fetchData = () => {
     const slug = this.props.slug;
 

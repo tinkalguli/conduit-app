@@ -8,14 +8,11 @@ import ReactMarkdown from "react-markdown";
 import { articleURL } from "./utility/utility";
 
 class SingleArticle extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      article: null,
-      error: "",
-      deletedArticle: null,
-    };
-  }
+  state = {
+    article: null,
+    error: "",
+    deletedArticle: null,
+  };
   componentDidMount() {
     const slug = this.props.match.params.slug;
     fetch(`${articleURL}/${slug}`, {
