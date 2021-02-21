@@ -74,7 +74,10 @@ function AuthHeader(props) {
         </NavLink>
       </li>
       <li className="nav-item">
-        <NavLink className="nav-link" to="/profile">
+        <NavLink
+          className="nav-link"
+          to={`/profiles/${props.user.username}`}
+        >
           <img
             src={props.user.image || "http://i.imgur.com/Xzm3mI0.jpg"}
             className="user-pic"

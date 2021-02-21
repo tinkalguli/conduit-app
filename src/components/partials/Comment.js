@@ -95,40 +95,50 @@ class Comment extends Component {
     return (
       <div className="row">
         <div className="col-xs-12 col-md-8 offset-md-2">
-          <form onSubmit={this.handleSubmit} className="card comment-form">
-            <div className="card-block">
-              <textarea
-                name="commentBody"
-                onChange={this.handleChange}
-                value={commentBody}
-                className="form-control"
-                placeholder="Write a comment..."
-                rows="3"
-              ></textarea>
-            </div>
-            <div className="card-footer">
-              {/* current user data image */}
-              <img
-                src="http://i.imgur.com/Qr71crq.jpg"
-                className="comment-author-img"
-              />
-              <button className="btn btn-sm btn-primary">
-                {createdComment === "spinning" ? (
-                  <Spinner />
-                ) : (
-                  "Post Comment"
-                )}
-              </button>
-            </div>
-          </form>
-          {Comments(comments, fetchRequestError)}
+          {this.props.user ? (
+            <form
+              onSubmit={this.handleSubmit}
+              className="card comment-form"
+            >
+              <div className="card-block">
+                <textarea
+                  name="commentBody"
+                  onChange={this.handleChange}
+                  value={commentBody}
+                  className="form-control"
+                  placeholder="Write a comment..."
+                  rows="3"
+                ></textarea>
+              </div>
+              <div className="card-footer">
+                <img
+                  src={
+                    this.props?.user?.image ||
+                    "http://i.imgur.com/Qr71crq.jpg"
+                  }
+                  className="comment-author-img"
+                  alt="current user avatar"
+                />
+                <button className="btn btn-sm btn-primary">
+                  {createdComment === "spinning" ? (
+                    <Spinner />
+                  ) : (
+                    "Post Comment"
+                  )}
+                </button>
+              </div>
+            </form>
+          ) : (
+            ""
+          )}
+          {Comments(comments, fetchRequestError, this.props.user)}
         </div>
       </div>
     );
   }
 }
 
-function Comments(comments, fetchRequestError) {
+function Comments(comments, fetchRequestError, currentUser) {
   if (fetchRequestError) {
     return <p className="article-preview">{fetchRequestError}</p>;
   }
@@ -161,10 +171,14 @@ function Comments(comments, fetchRequestError) {
         <span className="date-posted">
           {moment(comment.createdAt).format("dddd, MMMM Do YYYY")}
         </span>
-        <span className="mod-options">
-          <span className="ion-edit">✏️</span>
-          <span className="ion-trash-a">🗑</span>
-        </span>
+        {currentUser.username === comment.author.username ? (
+          <div className="mod-options">
+            <span className="ion-edit">✏️</span>
+            <span className="ion-trash-a">🗑</span>
+          </div>
+        ) : (
+          ""
+        )}
       </div>
     </div>
   ));

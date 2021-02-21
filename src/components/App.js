@@ -8,11 +8,12 @@ import Register from "./Register";
 import SingleArticle from "./SingleArticle";
 import NewArticle from "./NewArticle";
 import Settings from "./Settings";
-import Profile from "./Profile";
+import CurrentUserProfile from "./CurrentUserProfile";
 import { Component } from "react";
 import { localStorageKey, currentUserURL } from "./utility/utility";
 import FullPageSpinner from "./partials/fullPageSpinner/FullPageSpinner";
 import NoMatch from "./NoMatch";
+import Profile from "./Profile";
 
 class App extends Component {
   state = {
@@ -21,7 +22,8 @@ class App extends Component {
     isVerifying: true,
   };
   componentDidMount() {
-    if (localStorage[localStorageKey]) {
+    const token = localStorage.getItem(localStorageKey);
+    if (token) {
       const requestOptions = {
         method: "GET",
         headers: { authorization: localStorage.getItem(localStorageKey) },
@@ -37,7 +39,10 @@ class App extends Component {
         .then(({ user }) => {
           this.updateUser(user);
         })
-        .catch((errors) => console.log(errors));
+        .catch((errors) => {
+          console.log(errors);
+          this.setState({ isVerifying: false });
+        });
     } else {
       this.setState({ isVerifying: false });
     }
@@ -45,6 +50,10 @@ class App extends Component {
   updateUser = (user) => {
     this.setState({ isLoggedIn: true, user, isVerifying: false });
     localStorage.setItem(localStorageKey, user.token);
+  };
+  deleteUser = () => {
+    this.setState({ isLoggedIn: false, user: null });
+    localStorage.setItem(localStorageKey, "");
   };
   render() {
     const { isLoggedIn, user, isVerifying } = this.state;
@@ -57,7 +66,11 @@ class App extends Component {
       <>
         <Header isLoggedIn={isLoggedIn} user={user} />
         {isLoggedIn ? (
-          <AuthenticatedApp user={user} />
+          <AuthenticatedApp
+            user={user}
+            updateUser={this.updateUser}
+            deleteUser={this.deleteUser}
+          />
         ) : (
           <UnAuthenticatedApp updateUser={this.updateUser} />
         )}
@@ -77,12 +90,21 @@ function AuthenticatedApp(props) {
         <NewArticle />
       </Route>
       <Route path="/settings">
-        <Settings user={props.user} />
+        <Settings
+          user={props.user}
+          updateUser={props.updateUser}
+          deleteUser={props.deleteUser}
+        />
       </Route>
-      <Route path="/profile">
+      {/* <Route path="/profile">
+        <CurrentUserProfile user={props.user} />
+      </Route> */}
+      <Route path="/profiles/:username">
         <Profile user={props.user} />
       </Route>
-      <Route path="/articles/:slug" component={SingleArticle} />
+      <Route path="/articles/:slug">
+        <SingleArticle user={props.user} />
+      </Route>
       <Route path="*">
         <NoMatch />
       </Route>

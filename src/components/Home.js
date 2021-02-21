@@ -60,7 +60,7 @@ class Home extends Component {
                 </ul>
               </div>
 
-              <ArticleList activeFeed={activeFeed} />
+              <ArticleList activeFeed={activeFeed} activeTag={activeTag} />
             </div>
 
             <div className="col-md-3">

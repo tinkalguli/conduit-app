@@ -1,47 +1,61 @@
 import { Component } from "react";
-import { Link } from "react-router-dom";
+import { withRouter, Link } from "react-router-dom";
 import ArticleList from "./partials/ArticleList";
-import { currentUserURL, localStorageKey } from "./utility/utility";
 import Loader from "./partials/loader/Loader";
+import { localStorageKey, profileURL } from "./utility/utility";
 
 class Profile extends Component {
   state = {
-    activeFeed: "personal",
-    requestError: "",
-    currentUser: null,
+    activeFeed: "profileFeed",
+    profileUser: null,
   };
-  // componentDidMount() {
-  //   fetch(currentUserURL, {
-  //     headers: { authorization: localStorage.getItem(localStorageKey) },
-  //   })
-  //     .then((res) => {
-  //       if (!res.ok) {
-  //         throw new Error(res.statusText);
-  //       }
-  //       return res.json();
-  //     })
-  //     .then((data) => {
-  //       this.setState({ currentUser: data.user });
-  //     })
-  //     .catch((error) => {
-  //       this.setState({
-  //         requestError: "Not able to fetch current user data",
-  //       });
-  //     });
-  // }
+  fetchData = () => {
+    const username = this.props.match.params.username;
+    if (username === this.props.user.username) {
+      this.setState({
+        profileUser: this.props.user,
+        activeFeed: "personal",
+      });
+    }
+    fetch(`${profileURL}/${username}`, {
+      headers: { authorization: localStorage.getItem(localStorageKey) },
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(res.statusText);
+        }
+        return res.json();
+      })
+      .then(({ profile }) => {
+        this.setState({
+          profileUser: profile,
+        });
+      })
+      .catch(() => {
+        this.setState({
+          error: "Not able to fetch the profile",
+        });
+      });
+  };
+  componentDidMount() {
+    this.fetchData();
+  }
+  componentDidUpdate(prevProps) {
+    if (
+      prevProps.match.params.username !== this.props.match.params.username
+    ) {
+      this.fetchData();
+    }
+  }
   handleFeedClick = (activeFeed) => {
     this.setState({
       activeFeed: activeFeed,
     });
   };
   render() {
-    const { currentUser, requestError, activeFeed } = this.state;
+    const { activeFeed, profileUser } = this.state;
 
-    if (requestError) {
-      return <p className="article-preview">{requestError}</p>;
-    }
-
-    if (!currentUser) {
+    if (!profileUser) {
       return <Loader />;
     }
 
@@ -53,19 +67,27 @@ class Profile extends Component {
               <div className="col-xs-12 col-md-10 offset-md-1">
                 <img
                   src={
-                    currentUser?.image || "http://i.imgur.com/Qr71crq.jpg"
+                    profileUser?.image || "http://i.imgur.com/Qr71crq.jpg"
                   }
                   className="user-img"
+                  alt="avatar"
                 />
-                <h4>{currentUser?.username}</h4>
-                <p>{currentUser?.bio}</p>
-                <Link
-                  to="/settings"
-                  className="btn btn-sm btn-outline-secondary action-btn"
-                >
-                  <span className="ion-compose">⚙️</span>&nbsp;Edit Profile
-                  Settings
-                </Link>
+                <h4>{profileUser?.username}</h4>
+                <p>{profileUser?.bio}</p>
+                {profileUser.username === this.props.user.username ? (
+                  <Link
+                    to="/settings"
+                    className="btn btn-sm btn-outline-secondary action-btn"
+                  >
+                    <span className="ion-compose">⚙️</span>&nbsp;Edit
+                    Profile Settings
+                  </Link>
+                ) : (
+                  <button className="btn btn-sm btn-outline-secondary action-btn">
+                    <span className="ion-plus-round">➕️</span>
+                    &nbsp; Follow {profileUser?.username}{" "}
+                  </button>
+                )}
               </div>
             </div>
           </div>
@@ -76,14 +98,25 @@ class Profile extends Component {
             <div className="col-xs-12 col-md-10 offset-md-1">
               <div className="articles-toggle">
                 <ul className="nav nav-pills outline-active">
-                  <li
-                    onClick={() => this.handleFeedClick("personal")}
-                    className={`nav-item nav-link ${
-                      activeFeed === "personal" ? "active" : ""
-                    }`}
-                  >
-                    Your Feed
-                  </li>
+                  {profileUser.username === this.props.user.username ? (
+                    <li
+                      onClick={() => this.handleFeedClick("personal")}
+                      className={`nav-item nav-link ${
+                        activeFeed === "personal" ? "active" : ""
+                      }`}
+                    >
+                      My Articles
+                    </li>
+                  ) : (
+                    <li
+                      onClick={() => this.handleFeedClick("profileFeed")}
+                      className={`nav-item nav-link ${
+                        activeFeed === "profileFeed" ? "active" : ""
+                      }`}
+                    >
+                      {profileUser.username}'s Articles
+                    </li>
+                  )}
                   <li
                     onClick={() => this.handleFeedClick("favorited")}
                     className={`nav-item nav-link ${
@@ -97,7 +130,7 @@ class Profile extends Component {
 
               <ArticleList
                 activeFeed={activeFeed}
-                username={currentUser?.username}
+                username={profileUser?.username}
               />
             </div>
           </div>
@@ -107,4 +140,4 @@ class Profile extends Component {
   }
 }
 
-export default Profile;
+export default withRouter(Profile);

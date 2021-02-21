@@ -1,5 +1,5 @@
 import { Component } from "react";
-import { Link, Redirect } from "react-router-dom";
+import { Link, Redirect, withRouter } from "react-router-dom";
 import moment from "moment";
 import Loader from "./partials/loader/Loader";
 import TagPills from "./partials/TagPills";
@@ -11,7 +11,6 @@ class SingleArticle extends Component {
   state = {
     article: null,
     error: "",
-    deletedArticle: null,
   };
   componentDidMount() {
     const slug = this.props.match.params.slug;
@@ -29,7 +28,7 @@ class SingleArticle extends Component {
           article: data.article,
         });
       })
-      .catch((error) => {
+      .catch(() => {
         this.setState({
           error: "Not able to fetch the article",
         });
@@ -52,7 +51,7 @@ class SingleArticle extends Component {
         }
         return res.json();
       })
-      .then((data) => this.setState({ deletedArticle: data }))
+      .then(() => this.props.history.push("/"))
       .catch((errors) => {
         console.log(errors);
       });
@@ -62,11 +61,8 @@ class SingleArticle extends Component {
     updateFavoriteArticle(article.slug, article.favorited);
   };
   render() {
-    const { article, error, deletedArticle } = this.state;
-
-    if (deletedArticle) {
-      return <Redirect to="/" />;
-    }
+    const { article, error } = this.state;
+    const { user } = this.props;
 
     if (error) {
       return <center className="article-preview">{error}</center>;
@@ -100,36 +96,43 @@ class SingleArticle extends Component {
                   {moment(article.createdAt).format("dddd, MMMM Do YYYY")}
                 </span>
               </div>
-              <button className="btn btn-sm btn-outline-secondary">
-                <span className="ion-plus-round">➕️</span>
-                &nbsp; Follow {article.author.username}{" "}
-              </button>
+              {article.author.username === user.username ? (
+                <Link
+                  to="/editor"
+                  className="btn btn-outline-secondary btn-sm"
+                >
+                  <span>✏️</span>
+                  &nbsp;Edit Article{" "}
+                </Link>
+              ) : (
+                <button className="btn btn-sm btn-outline-secondary">
+                  <span className="ion-plus-round">➕️</span>
+                  &nbsp; Follow {article.author.username}{" "}
+                </button>
+              )}
               &nbsp;&nbsp;
-              <button
-                onClick={this.handleFavoriteClick}
-                className={`btn btn-sm btn-outline-primary ${
-                  article.favorited ? "active" : ""
-                }`}
-              >
-                <span className="ion-heart">💚</span>
-                &nbsp; Favorite Article{" "}
-                <span className="counter">({article.favoritesCount})</span>
-              </button>
-              <Link
-                to="/editor"
-                className="btn btn-outline-secondary btn-sm"
-              >
-                <span>✏️</span>
-                &nbsp;Edit Article{" "}
-              </Link>
-              &nbsp;&nbsp;
-              <button
-                onClick={this.handleDeleteArticle}
-                className="btn btn-outline-danger btn-sm"
-              >
-                <span>🗑</span>
-                &nbsp; Delete Article{" "}
-              </button>
+              {article.author.username === user.username ? (
+                <button
+                  onClick={this.handleDeleteArticle}
+                  className="btn btn-outline-danger btn-sm"
+                >
+                  <span>🗑</span>
+                  &nbsp; Delete Article{" "}
+                </button>
+              ) : (
+                <button
+                  onClick={this.handleFavoriteClick}
+                  className={`btn btn-sm btn-outline-primary ${
+                    article.favorited ? "active" : ""
+                  }`}
+                >
+                  <span className="ion-heart">💚</span>
+                  &nbsp; Favorite Article{" "}
+                  <span className="counter">
+                    ({article.favoritesCount})
+                  </span>
+                </button>
+              )}
             </div>
           </div>
         </section>
@@ -163,31 +166,46 @@ class SingleArticle extends Component {
                   {moment(article.createdAt).format("dddd, MMMM Do YYYY")}
                 </span>
               </div>
-              {/* <button className="btn btn-sm btn-outline-secondary">
-                <span className="ion-plus-round">➕️</span>
-                &nbsp; Follow {article.author.username}{" "}
-              </button>
+              {article.author.username === user.username ? (
+                <Link
+                  to="/editor"
+                  className="btn btn-outline-secondary btn-sm"
+                >
+                  <span>✏️</span>
+                  &nbsp;Edit Article{" "}
+                </Link>
+              ) : (
+                <button className="btn btn-sm btn-outline-secondary">
+                  <span className="ion-plus-round">➕️</span>
+                  &nbsp; Follow {article.author.username}{" "}
+                </button>
+              )}
               &nbsp;&nbsp;
-              <button className="btn btn-sm btn-outline-primary">
-                <span className="ion-heart">💚</span>
-                &nbsp; Favorite Article{" "}
-                <span className="counter">({article.favoritesCount})</span>
-              </button> */}
-              <Link
-                to="/editor"
-                className="btn btn-outline-secondary btn-sm"
-              >
-                <span>✏️</span>
-                &nbsp;Edit Article{" "}
-              </Link>
-              &nbsp;&nbsp;
-              <button className="btn btn-outline-danger btn-sm">
-                <span>🗑</span>
-                &nbsp; Delete Article{" "}
-              </button>
+              {article.author.username === user.username ? (
+                <button
+                  onClick={this.handleDeleteArticle}
+                  className="btn btn-outline-danger btn-sm"
+                >
+                  <span>🗑</span>
+                  &nbsp; Delete Article{" "}
+                </button>
+              ) : (
+                <button
+                  onClick={this.handleFavoriteClick}
+                  className={`btn btn-sm btn-outline-primary ${
+                    article.favorited ? "active" : ""
+                  }`}
+                >
+                  <span className="ion-heart">💚</span>
+                  &nbsp; Favorite Article{" "}
+                  <span className="counter">
+                    ({article.favoritesCount})
+                  </span>
+                </button>
+              )}
             </div>
           </div>
-          <Comment slug={article.slug} />
+          <Comment slug={article.slug} user={user} />
         </section>
       </main>
     );
@@ -214,4 +232,4 @@ function updateFavoriteArticle(slug, isFavorited) {
   fetch(`${articleURL}/${slug}/favorite`, requestOptions);
 }
 
-export default SingleArticle;
+export default withRouter(SingleArticle);

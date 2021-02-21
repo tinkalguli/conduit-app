@@ -15,7 +15,7 @@ class ArticleList extends Component {
     error: "",
   };
   updateData = (dataName) => {
-    const { activeFeed, username } = this.props;
+    const { activeFeed, username, activeTag } = this.props;
     const { activePageIndex, articlePerPage } = this.state;
     let url = articleURL;
     let query =
@@ -25,12 +25,16 @@ class ArticleList extends Component {
           }`
         : "";
 
+    if (activeTag) {
+      query += `&tag=${activeTag}`;
+    }
+
     if (activeFeed === "personal") {
       url = feedURL;
     } else if (activeFeed === "favorited") {
       query += `&favorited=${username}`;
-    } else if (activeFeed !== "global") {
-      query += `&tag=${activeFeed}`;
+    } else if (activeFeed === "profileFeed") {
+      query += `&author=${username}`;
     }
 
     const requestOptions = {
@@ -120,9 +124,12 @@ class ArticleList extends Component {
                 />
               </a>
               <div className="info">
-                <a href="profile.html" className="author">
+                <Link
+                  to={`/profiles/${article.author.username}`}
+                  className="author"
+                >
                   {article.author.username}
-                </a>
+                </Link>
                 <span className="date">
                   {moment(article.createdAt).format("dddd, MMMM Do YYYY")}
                 </span>

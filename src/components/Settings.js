@@ -1,13 +1,10 @@
 import { Component } from "react";
-import { Redirect } from "react-router-dom";
+import { withRouter } from "react-router-dom";
 import { currentUserURL, localStorageKey } from "./utility/utility";
 import { validateUserInfo } from "./Register";
-import Loader from "./partials/loader/Loader";
 
 class Settings extends Component {
   state = {
-    currentUser: null,
-    fetchRequestError: "",
     updatedUser: null,
     updateRequestError: "",
     username: "",
@@ -21,37 +18,9 @@ class Settings extends Component {
       password: "",
     },
   };
-  // componentDidMount() {
-  //   const requestOptions = {
-  //     method: "GET",
-  //     headers: {
-  //       authorization: localStorage.getItem(localStorageKey),
-  //     },
-  //   };
-  //   console.log(requestOptions);
-  //   fetch(currentUserURL, requestOptions)
-  //     .then((res) => {
-  //       if (!res.ok) {
-  //         throw new Error(res.statusText);
-  //       }
-  //       return res.json();
-  //     })
-  //     .then((data) => {
-  //       const currentUser = data.user;
-  //       this.setState({
-  //         currentUser,
-  //         username: currentUser?.username,
-  //         email: currentUser?.email,
-  //         bio: currentUser?.bio,
-  //         image: currentUser?.image,
-  //       });
-  //     })
-  //     .catch((error) => {
-  //       this.setState({
-  //         fetchRequestError: "Not able to fetch current user data",
-  //       });
-  //     });
-  // }
+  componentDidMount() {
+    this.setState({ ...this.props.user });
+  }
   handleSubmit = (event) => {
     event.preventDefault();
     const { username, email, bio, image, password } = this.state;
@@ -72,14 +41,18 @@ class Settings extends Component {
       };
 
       fetch(currentUserURL, requestOptions)
-        .then((res) => {
+        .then(async (res) => {
           if (!res.ok) {
-            throw new Error(res.statusText);
+            const { errors } = await res.json();
+            return await Promise.reject(errors);
           }
           return res.json();
         })
-        .then((data) => this.setState({ updatedUser: data.user }))
-        .catch((error) => {
+        .then(({ user }) => {
+          this.props.updateUser(user);
+          this.props.history.push("/profile");
+        })
+        .catch((errors) => {
           this.setState({
             updateRequestError: "Not able to update current user",
           });
@@ -115,19 +88,8 @@ class Settings extends Component {
       bio,
       image,
       errors,
-      updatedUser,
-      currentUser,
-      fetchRequestError,
       updateRequestError,
     } = this.state;
-
-    if (updatedUser) {
-      return <Redirect to="/profile" />;
-    }
-
-    if (!currentUser) {
-      return <Loader />;
-    }
 
     return (
       <div className="settings-page">
@@ -135,7 +97,6 @@ class Settings extends Component {
           <div className="row">
             <div className="col-md-6 offset-md-3 col-xs-12">
               <h1 className="text-xs-center">Your Settings</h1>
-              <p className="server-error">{fetchRequestError}</p>
               <p className="server-error">{updateRequestError}</p>
               <form onSubmit={this.handleSubmit}>
                 <fieldset>
@@ -214,7 +175,13 @@ class Settings extends Component {
 
               <hr />
 
-              <button className="btn btn-outline-danger">
+              <button
+                onClick={() => {
+                  this.props.deleteUser();
+                  this.props.history.push("/");
+                }}
+                className="btn btn-outline-danger"
+              >
                 Or click here to logout.
               </button>
             </div>
@@ -225,4 +192,4 @@ class Settings extends Component {
   }
 }
 
-export default Settings;
+export default withRouter(Settings);
