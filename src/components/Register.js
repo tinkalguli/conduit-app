@@ -1,6 +1,7 @@
 import { Component } from "react";
-import { Link, Redirect } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { registerURL } from "./utility/utility";
+import { withRouter } from "react-router-dom";
 
 class Register extends Component {
   state = {
@@ -12,28 +13,9 @@ class Register extends Component {
       email: "",
       password: "",
     },
-    registeredUser: null,
-    token: "",
     requestError: "",
     validationError: "",
   };
-  handleUpdateLocalStorage = () => {
-    localStorage.setItem("token", this.state.token);
-  };
-  // componentDidMount() {
-  //   if (localStorage.token) {
-  //     this.setState({
-  //       token: JSON.parse(localStorage.token) || "",
-  //     });
-  //   }
-  //   window.addEventListener("beforeunload", this.handleUpdateLocalStorage);
-  // }
-  // componentWillUnmount() {
-  //   window.removeEventListener(
-  //     "beforeunload",
-  //     this.handleUpdateLocalStorage
-  //   );
-  // }
   handleSubmit = (event) => {
     event.preventDefault();
     const { username, email, password } = this.state;
@@ -64,13 +46,8 @@ class Register extends Component {
                 : "Username is already exist",
             });
           } else {
-            this.setState(
-              () => ({
-                registeredUser: data.user,
-                token: data.user.token,
-              }),
-              this.handleUpdateLocalStorage
-            );
+            this.props.updateUser(data.user);
+            this.props.history.push("/");
           }
         })
         .catch((error) => {
@@ -96,14 +73,9 @@ class Register extends Component {
       email,
       password,
       errors,
-      registeredUser,
       validationError,
       requestError,
     } = this.state;
-
-    if (registeredUser) {
-      return <Redirect to="/" />;
-    }
 
     return (
       <div className="auth-page">
@@ -228,4 +200,4 @@ export function validateUserInfo(value, name, errors) {
   }
 }
 
-export default Register;
+export default withRouter(Register);

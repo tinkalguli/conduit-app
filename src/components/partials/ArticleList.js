@@ -4,7 +4,7 @@ import moment from "moment";
 import { Link } from "react-router-dom";
 import TagPills from "./TagPills";
 import Pagination from "./Pagination";
-import { articleURL, feedURL } from "../utility/utility";
+import { articleURL, feedURL, localStorageKey } from "../utility/utility";
 
 class ArticleList extends Component {
   state = {
@@ -34,7 +34,7 @@ class ArticleList extends Component {
     }
 
     fetch(`${url}?${query}`, {
-      headers: { authorization: localStorage.getItem("token") },
+      headers: { authorization: localStorage.getItem(localStorageKey) },
     })
       .then((res) => {
         if (!res.ok) {

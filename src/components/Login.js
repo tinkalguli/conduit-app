@@ -1,7 +1,8 @@
 import { Component } from "react";
-import { Link, Redirect } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { loginURL } from "./utility/utility";
 import { validateUserInfo } from "./Register";
+import { withRouter } from "react-router-dom";
 
 class Login extends Component {
   state = {
@@ -11,28 +12,9 @@ class Login extends Component {
       email: "",
       password: "",
     },
-    logedInUser: null,
-    token: "",
     requestError: "",
     validationError: "",
   };
-  handleUpdateLocalStorage = () => {
-    localStorage.setItem("token", this.state.token);
-  };
-  // componentDidMount() {
-  //   if (localStorage.token) {
-  //     this.setState({
-  //       token: localStorage.token || "",
-  //     });
-  //   }
-  //   window.addEventListener("beforeunload", this.handleUpdateLocalStorage);
-  // }
-  // componentWillUnmount() {
-  //   window.removeEventListener(
-  //     "beforeunload",
-  //     this.handleUpdateLocalStorage
-  //   );
-  // }
   handleSubmit = (event) => {
     event.preventDefault();
     const { email, password } = this.state;
@@ -58,10 +40,8 @@ class Login extends Component {
               validationError: "Invalid email or password",
             });
           } else {
-            this.setState(
-              () => ({ logedInUser: data.user, token: data.user.token }),
-              this.handleUpdateLocalStorage
-            );
+            this.props.updateUser(data.user);
+            this.props.history.push("/");
           }
         })
         .catch((error) => {
@@ -87,14 +67,9 @@ class Login extends Component {
       email,
       password,
       errors,
-      logedInUser,
       validationError,
       requestError,
     } = this.state;
-
-    if (logedInUser) {
-      return <Redirect to="/" />;
-    }
 
     return (
       <div className="auth-page">
@@ -156,4 +131,4 @@ class Login extends Component {
   }
 }
 
-export default Login;
+export default withRouter(Login);

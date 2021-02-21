@@ -1,6 +1,6 @@
 import { Component } from "react";
 import { Redirect } from "react-router-dom";
-import { currentUserURL } from "./utility/utility";
+import { currentUserURL, localStorageKey } from "./utility/utility";
 import { validateUserInfo } from "./Register";
 import Loader from "./partials/loader/Loader";
 
@@ -25,9 +25,10 @@ class Settings extends Component {
     const requestOptions = {
       method: "GET",
       headers: {
-        authorization: localStorage.getItem("token"),
+        authorization: localStorage.getItem(localStorageKey),
       },
     };
+    console.log(requestOptions);
     fetch(currentUserURL, requestOptions)
       .then((res) => {
         if (!res.ok) {
@@ -65,7 +66,7 @@ class Settings extends Component {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          authorization: localStorage.getItem("token"),
+          authorization: localStorage.getItem(localStorageKey),
         },
         body: JSON.stringify({ user }),
       };

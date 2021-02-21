@@ -1,7 +1,7 @@
 import { Component } from "react";
 import { Link } from "react-router-dom";
 import ArticleList from "./partials/ArticleList";
-import { currentUserURL } from "./utility/utility";
+import { currentUserURL, localStorageKey } from "./utility/utility";
 import Loader from "./partials/loader/Loader";
 
 class Profile extends Component {
@@ -12,7 +12,7 @@ class Profile extends Component {
   };
   componentDidMount() {
     fetch(currentUserURL, {
-      headers: { authorization: localStorage.getItem("token") },
+      headers: { authorization: localStorage.getItem(localStorageKey) },
     })
       .then((res) => {
         if (!res.ok) {

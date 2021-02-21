@@ -5,7 +5,7 @@ import Loader from "./partials/loader/Loader";
 import TagPills from "./partials/TagPills";
 import Comment from "./partials/Comment";
 import ReactMarkdown from "react-markdown";
-import { articleURL } from "./utility/utility";
+import { articleURL, localStorageKey } from "./utility/utility";
 
 class SingleArticle extends Component {
   state = {
@@ -16,7 +16,7 @@ class SingleArticle extends Component {
   componentDidMount() {
     const slug = this.props.match.params.slug;
     fetch(`${articleURL}/${slug}`, {
-      headers: { authorization: localStorage.getItem("token") },
+      headers: { authorization: localStorage.getItem(localStorageKey) },
     })
       .then((res) => {
         if (!res.ok) {
@@ -47,11 +47,16 @@ class SingleArticle extends Component {
     fetch(`${articleURL}/${slug}`, requestOptions)
       .then((res) => {
         if (!res.ok) {
-          throw new Error(res.statusText);
+          return res.json().then(({ errors }) => {
+            return Promise.reject(errors);
+          });
         }
         return res.json();
       })
-      .then((data) => this.setState({ deletedArticle: data }));
+      .then((data) => this.setState({ deletedArticle: data }))
+      .catch((errors) => {
+        console.log(errors);
+      });
   };
   handleFavoriteClick = () => {
     const { article } = this.state;

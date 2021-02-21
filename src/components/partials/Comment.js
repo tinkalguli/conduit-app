@@ -2,7 +2,7 @@ import { Component } from "react";
 import Loader from "./loader/Loader";
 import moment from "moment";
 import { Link } from "react-router-dom";
-import { articleURL } from "../utility/utility";
+import { articleURL, localStorageKey } from "../utility/utility";
 import Spinner from "./spinner/Spinner";
 
 class Comment extends Component {
@@ -17,7 +17,7 @@ class Comment extends Component {
     const slug = this.props.slug;
 
     fetch(`${articleURL}/${slug}/comments`, {
-      authorization: localStorage.getItem("token"),
+      authorization: localStorage.getItem(localStorageKey),
     })
       .then((res) => {
         if (!res.ok) {
@@ -54,7 +54,7 @@ class Comment extends Component {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        authorization: localStorage.getItem("token"),
+        authorization: localStorage.getItem(localStorageKey),
       },
       body: JSON.stringify({ comment }),
     };

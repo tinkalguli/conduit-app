@@ -1,6 +1,6 @@
 import { Component } from "react";
 import { Redirect } from "react-router-dom";
-import { articleURL } from "./utility/utility";
+import { articleURL, localStorageKey } from "./utility/utility";
 
 class NewArticle extends Component {
   state = {
@@ -34,7 +34,7 @@ class NewArticle extends Component {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          authorization: localStorage.getItem("token"),
+          authorization: localStorage.getItem(localStorageKey),
         },
         body: JSON.stringify({ article }),
       };
@@ -58,41 +58,16 @@ class NewArticle extends Component {
     let errors = this.state.errors;
     let tags = [];
 
-    switch (name) {
-      case "title":
-        errors.title = !value.length ? "Title is required" : "";
-        break;
-      case "description":
-        errors.description = !value.length
-          ? "Description is required"
-          : value.length < 10
-          ? "Description must have atleast 10 character"
-          : "";
-        break;
-      case "body":
-        errors.body = !value.length
-          ? "Body is required"
-          : value.length < 20
-          ? "Body must have atleast 20 character"
-          : "";
-        break;
-      case "tagInput":
-        if (value.includes(",")) {
-          tags = value
-            .trim()
-            .split(",")
-            .map((tag) => tag.trim())
-            .filter((val) => val !== "");
-          value = "";
-        }
-        errors.tagList =
-          !this.state.tagList.length && !tags.length
-            ? "TagList is required"
-            : "";
-        break;
-      default:
-        break;
+    if (name === "tagInput" && value.includes(",")) {
+      tags = value
+        .trim()
+        .split(",")
+        .map((tag) => tag.trim())
+        .filter((val) => val !== "");
+      value = "";
     }
+
+    validateArticleInfo(value, name, errors);
 
     this.setState(({ tagList }) => ({
       [name]: value,
@@ -213,6 +188,30 @@ class NewArticle extends Component {
         </div>
       </div>
     );
+  }
+}
+
+export function validateArticleInfo(value, name, errors) {
+  switch (name) {
+    case "title":
+      errors.title = !value.length ? "Title is required" : "";
+      break;
+    case "description":
+      errors.description = !value.length
+        ? "Description is required"
+        : value.length < 10
+        ? "Description must have atleast 10 character"
+        : "";
+      break;
+    case "body":
+      errors.body = !value.length
+        ? "Body is required"
+        : value.length < 20
+        ? "Body must have atleast 20 character"
+        : "";
+      break;
+    default:
+      break;
   }
 }
 

@@ -46,7 +46,7 @@ $brand-danger: #b85c5c !default;
 .pagination-btn {
   cursor: pointer;
   &.active {
-    background: #5cb85c;
+    background: $brand-primary;
     color: #fff;
   }
 }
@@ -99,7 +99,8 @@ ul.tag-list {
 .nav-link {
   .user-pic {
     height: 26px;
-    border-radius: 50px;
+    width: 26px;
+    border-radius: 2px;
     float: left;
     margin-right: 5px;
   }
@@ -196,7 +197,7 @@ footer {
     vertical-align: middle;
     height: 32px;
     width: 32px;
-    border-radius: 30px;
+    border-radius: 2px;
   }
 
   .info {
@@ -207,6 +208,7 @@ footer {
 
     .author {
       display: block;
+      color: #333;
       font-weight: 500 !important;
     }
     .date {
@@ -246,7 +248,7 @@ footer {
       max-width: 30%;
       font-size: 0.8rem;
       font-weight: 300;
-      color: #1db41d;
+      color: $brand-primary;
       vertical-align: middle;
     }
     ul {
