@@ -41,15 +41,14 @@ class SingleArticle extends Component {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
-        authorization: localStorage.getItem("token"),
+        authorization: localStorage.getItem(localStorageKey),
       },
     };
     fetch(`${articleURL}/${slug}`, requestOptions)
-      .then((res) => {
+      .then(async (res) => {
         if (!res.ok) {
-          return res.json().then(({ errors }) => {
-            return Promise.reject(errors);
-          });
+          const { errors } = await res.json();
+          return await Promise.reject(errors);
         }
         return res.json();
       })

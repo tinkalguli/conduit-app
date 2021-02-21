@@ -1,8 +1,19 @@
-export const URL = "/api";
-export const articleURL = URL + "/articles";
-export const feedURL = articleURL + "/feed";
-export const tagsURL = URL + "/tags";
-export const loginURL = URL + "/users/login";
-export const registerURL = URL + "/users";
-export const currentUserURL = URL + "/user";
-export const localStorageKey = "user_token";
+const URL = "/api";
+const articleURL = URL + "/articles";
+const feedURL = articleURL + "/feed";
+const tagsURL = URL + "/tags";
+const loginURL = URL + "/users/login";
+const registerURL = URL + "/users";
+const currentUserURL = URL + "/user";
+const localStorageKey = "user_token";
+
+export {
+  URL,
+  articleURL,
+  feedURL,
+  tagsURL,
+  loginURL,
+  registerURL,
+  currentUserURL,
+  localStorageKey,
+};

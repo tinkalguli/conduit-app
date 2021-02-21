@@ -1,4 +1,4 @@
-import { Route } from "react-router-dom";
+import { Route, Switch } from "react-router-dom";
 import Home from "./Home";
 import Dashboard from "./Dashboard";
 import Header from "./partials/Header";
@@ -12,6 +12,7 @@ import Profile from "./Profile";
 import { Component } from "react";
 import { localStorageKey, currentUserURL } from "./utility/utility";
 import FullPageSpinner from "./partials/fullPageSpinner/FullPageSpinner";
+import NoMatch from "./NoMatch";
 
 class App extends Component {
   state = {
@@ -26,11 +27,10 @@ class App extends Component {
         headers: { authorization: localStorage.getItem(localStorageKey) },
       };
       fetch(currentUserURL, requestOptions)
-        .then((res) => {
+        .then(async (res) => {
           if (!res.ok) {
-            return res.json().then(({ errors }) => {
-              return Promise.reject(errors);
-            });
+            const { errors } = await res.json();
+            return await Promise.reject(errors);
           }
           return res.json();
         })
@@ -43,7 +43,6 @@ class App extends Component {
     }
   }
   updateUser = (user) => {
-    console.log(user);
     this.setState({ isLoggedIn: true, user, isVerifying: false });
     localStorage.setItem(localStorageKey, user.token);
   };
@@ -57,32 +56,58 @@ class App extends Component {
     return (
       <>
         <Header isLoggedIn={isLoggedIn} user={user} />
-        <Route path="/" exact>
-          <Home />
-        </Route>
-        {/* <Route path="/" exact>
-          <Dashboard />
-        </Route> */}
-        <Route path="/login">
-          <Login updateUser={this.updateUser} />
-        </Route>
-        <Route path="/register">
-          <Register updateUser={this.updateUser} />
-        </Route>
-        <Route path="/editor">
-          <NewArticle />
-        </Route>
-        <Route path="/settings">
-          <Settings />
-        </Route>
-        <Route path="/profile">
-          <Profile />
-        </Route>
-        <Route path="/articles/:slug" component={SingleArticle} />
+        {isLoggedIn ? (
+          <AuthenticatedApp user={user} />
+        ) : (
+          <UnAuthenticatedApp updateUser={this.updateUser} />
+        )}
         <Footer />
       </>
     );
   }
+}
+
+function AuthenticatedApp(props) {
+  return (
+    <Switch>
+      <Route path="/" exact>
+        <Dashboard />
+      </Route>
+      <Route path="/editor">
+        <NewArticle />
+      </Route>
+      <Route path="/settings">
+        <Settings user={props.user} />
+      </Route>
+      <Route path="/profile">
+        <Profile user={props.user} />
+      </Route>
+      <Route path="/articles/:slug" component={SingleArticle} />
+      <Route path="*">
+        <NoMatch />
+      </Route>
+    </Switch>
+  );
+}
+
+function UnAuthenticatedApp(props) {
+  return (
+    <Switch>
+      <Route path="/" exact>
+        <Home />
+      </Route>
+      <Route path="/login">
+        <Login updateUser={props.updateUser} />
+      </Route>
+      <Route path="/register">
+        <Register updateUser={props.updateUser} />
+      </Route>
+      <Route path="/articles/:slug" component={SingleArticle} />
+      <Route path="*">
+        <NoMatch />
+      </Route>
+    </Switch>
+  );
 }
 
 export default App;

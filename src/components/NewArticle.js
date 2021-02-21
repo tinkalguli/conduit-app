@@ -39,14 +39,15 @@ class NewArticle extends Component {
         body: JSON.stringify({ article }),
       };
       fetch(articleURL, requestOptions)
-        .then((res) => {
+        .then(async (res) => {
           if (!res.ok) {
-            throw new Error(res.statusText);
+            const { errors } = await res.json();
+            return await Promise.reject(errors);
           }
           return res.json();
         })
         .then((data) => this.setState({ createdArticle: data.article }))
-        .catch((error) => {
+        .catch(() => {
           this.setState({
             requestError: "Not able to create the article",
           });

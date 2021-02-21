@@ -37,7 +37,7 @@ class Login extends Component {
         .then((data) => {
           if (data.errors) {
             this.setState({
-              validationError: "Invalid email or password",
+              validationError: data.errors.body[0],
             });
           } else {
             this.props.updateUser(data.user);

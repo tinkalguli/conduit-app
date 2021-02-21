@@ -21,37 +21,37 @@ class Settings extends Component {
       password: "",
     },
   };
-  componentDidMount() {
-    const requestOptions = {
-      method: "GET",
-      headers: {
-        authorization: localStorage.getItem(localStorageKey),
-      },
-    };
-    console.log(requestOptions);
-    fetch(currentUserURL, requestOptions)
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error(res.statusText);
-        }
-        return res.json();
-      })
-      .then((data) => {
-        const currentUser = data.user;
-        this.setState({
-          currentUser,
-          username: currentUser?.username,
-          email: currentUser?.email,
-          bio: currentUser?.bio,
-          image: currentUser?.image,
-        });
-      })
-      .catch((error) => {
-        this.setState({
-          fetchRequestError: "Not able to fetch current user data",
-        });
-      });
-  }
+  // componentDidMount() {
+  //   const requestOptions = {
+  //     method: "GET",
+  //     headers: {
+  //       authorization: localStorage.getItem(localStorageKey),
+  //     },
+  //   };
+  //   console.log(requestOptions);
+  //   fetch(currentUserURL, requestOptions)
+  //     .then((res) => {
+  //       if (!res.ok) {
+  //         throw new Error(res.statusText);
+  //       }
+  //       return res.json();
+  //     })
+  //     .then((data) => {
+  //       const currentUser = data.user;
+  //       this.setState({
+  //         currentUser,
+  //         username: currentUser?.username,
+  //         email: currentUser?.email,
+  //         bio: currentUser?.bio,
+  //         image: currentUser?.image,
+  //       });
+  //     })
+  //     .catch((error) => {
+  //       this.setState({
+  //         fetchRequestError: "Not able to fetch current user data",
+  //       });
+  //     });
+  // }
   handleSubmit = (event) => {
     event.preventDefault();
     const { username, email, bio, image, password } = this.state;

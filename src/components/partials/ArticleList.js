@@ -33,12 +33,21 @@ class ArticleList extends Component {
       query += `&tag=${activeFeed}`;
     }
 
-    fetch(`${url}?${query}`, {
-      headers: { authorization: localStorage.getItem(localStorageKey) },
-    })
-      .then((res) => {
+    const requestOptions = {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        authorization: localStorage[localStorageKey]
+          ? localStorage.getItem(localStorageKey)
+          : "",
+      },
+    };
+
+    fetch(`${url}?${query}`, requestOptions)
+      .then(async (res) => {
         if (!res.ok) {
-          throw new Error(res.statusText);
+          const { errors } = await res.json();
+          return await Promise.reject(errors);
         }
         return res.json();
       })
@@ -50,7 +59,7 @@ class ArticleList extends Component {
               : data.articlesCount,
         });
       })
-      .catch((error) => {
+      .catch((errors) => {
         this.setState({
           error: "Not able to fetch articles",
         });

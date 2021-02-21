@@ -10,25 +10,25 @@ class Profile extends Component {
     requestError: "",
     currentUser: null,
   };
-  componentDidMount() {
-    fetch(currentUserURL, {
-      headers: { authorization: localStorage.getItem(localStorageKey) },
-    })
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error(res.statusText);
-        }
-        return res.json();
-      })
-      .then((data) => {
-        this.setState({ currentUser: data.user });
-      })
-      .catch((error) => {
-        this.setState({
-          requestError: "Not able to fetch current user data",
-        });
-      });
-  }
+  // componentDidMount() {
+  //   fetch(currentUserURL, {
+  //     headers: { authorization: localStorage.getItem(localStorageKey) },
+  //   })
+  //     .then((res) => {
+  //       if (!res.ok) {
+  //         throw new Error(res.statusText);
+  //       }
+  //       return res.json();
+  //     })
+  //     .then((data) => {
+  //       this.setState({ currentUser: data.user });
+  //     })
+  //     .catch((error) => {
+  //       this.setState({
+  //         requestError: "Not able to fetch current user data",
+  //       });
+  //     });
+  // }
   handleFeedClick = (activeFeed) => {
     this.setState({
       activeFeed: activeFeed,

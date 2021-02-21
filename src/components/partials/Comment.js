@@ -19,9 +19,10 @@ class Comment extends Component {
     fetch(`${articleURL}/${slug}/comments`, {
       authorization: localStorage.getItem(localStorageKey),
     })
-      .then((res) => {
+      .then(async (res) => {
         if (!res.ok) {
-          throw new Error(res.statusText);
+          const { errors } = await res.json();
+          return await Promise.reject(errors);
         }
         return res.json();
       })
@@ -59,9 +60,10 @@ class Comment extends Component {
       body: JSON.stringify({ comment }),
     };
     fetch(`${articleURL}/${slug}/comments`, requestOptions)
-      .then((res) => {
+      .then(async (res) => {
         if (!res.ok) {
-          throw new Error(res.statusText);
+          const { errors } = await res.json();
+          return await Promise.reject(errors);
         }
         return res.json();
       })
@@ -69,7 +71,7 @@ class Comment extends Component {
       .then(() => {
         this.fetchData();
       })
-      .catch((error) => {
+      .catch((errors) => {
         this.setState({
           postRequestError: "Not able to create the comment",
         });

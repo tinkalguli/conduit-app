@@ -9,9 +9,10 @@ class TagList extends Component {
   };
   componentDidMount() {
     fetch(tagsURL)
-      .then((res) => {
+      .then(async (res) => {
         if (!res.ok) {
-          throw new Error(res.statusText);
+          const { errors } = await res.json();
+          return await Promise.reject(errors);
         }
         return res.json();
       })
@@ -20,7 +21,7 @@ class TagList extends Component {
           tagList: res.tags,
         });
       })
-      .catch((error) => {
+      .catch((errors) => {
         this.setState({
           error: "Not able to fetch tags",
         });

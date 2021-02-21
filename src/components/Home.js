@@ -37,14 +37,6 @@ class Home extends Component {
             <div className="col-md-9">
               <div className="feed-toggle">
                 <ul className="nav nav-pills outline-active">
-                  {/* <li
-                    onClick={() => this.handleFeedClick("personal")}
-                    className={`nav-item nav-link ${
-                      activeFeed === "personal" ? "active" : ""
-                    }`}
-                  >
-                    Your Feed
-                  </li> */}
                   <li
                     onClick={() => this.handleFeedClick("global")}
                     className={`nav-item nav-link ${
