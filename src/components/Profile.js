@@ -11,9 +11,9 @@ class Profile extends Component {
   };
   fetchData = () => {
     const username = this.props.match.params.username;
-    if (username === this.props.user.username) {
+    if (username === this.props?.user?.username) {
       this.setState({
-        profileUser: this.props.user,
+        profileUser: this.props?.user,
         activeFeed: "personal",
       });
     }
@@ -86,7 +86,7 @@ class Profile extends Component {
                 />
                 <h4>{profileUser?.username}</h4>
                 <p>{profileUser?.bio}</p>
-                {profileUser.username === this.props.user.username ? (
+                {profileUser.username === this.props?.user?.username ? (
                   <Link
                     to="/settings"
                     className="btn btn-sm btn-outline-secondary action-btn"
@@ -118,7 +118,7 @@ class Profile extends Component {
             <div className="col-xs-12 col-md-10 offset-md-1">
               <div className="articles-toggle">
                 <ul className="nav nav-pills outline-active">
-                  {profileUser.username === this.props.user.username ? (
+                  {profileUser.username === this.props?.user?.username ? (
                     <li
                       onClick={() => this.handleFeedClick("personal")}
                       className={`nav-item nav-link ${

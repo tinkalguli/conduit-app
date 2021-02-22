@@ -167,10 +167,10 @@ function ArticleMeta(props) {
           {article.author.username}
         </Link>
         <span className="date">
-          {moment(article.createdAt).format("dddd, MMMM Do YYYY")}
+          {moment(article?.createdAt).format("dddd, MMMM Do YYYY")}
         </span>
       </div>
-      {article.author.username === user.username ? (
+      {article.author.username === user?.username ? (
         <Link
           to={`/editor/${article.slug}`}
           className="btn btn-outline-secondary btn-sm"
@@ -191,7 +191,7 @@ function ArticleMeta(props) {
         </button>
       )}
       &nbsp;&nbsp;
-      {article.author.username === user.username ? (
+      {article.author?.username === user?.username ? (
         <button
           onClick={props.handleDeleteArticle}
           className="btn btn-outline-danger btn-sm"

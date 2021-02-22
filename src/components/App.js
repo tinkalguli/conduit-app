@@ -124,6 +124,9 @@ function UnAuthenticatedApp(props) {
       <Route path="/register">
         <Register updateUser={props.updateUser} />
       </Route>
+      <Route path="/profiles/:username">
+        <Profile user={props.user} />
+      </Route>
       <Route path="/articles/:slug" component={SingleArticle} />
       <Route path="*">
         <NoMatch />
