@@ -86,7 +86,7 @@ function AuthenticatedApp(props) {
       <Route path="/" exact>
         <Dashboard />
       </Route>
-      <Route path="/editor">
+      <Route path="/editor" exact>
         <NewArticle />
       </Route>
       <Route path="/settings">

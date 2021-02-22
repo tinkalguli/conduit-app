@@ -1,5 +1,5 @@
 import { Component } from "react";
-import { Link, Redirect, withRouter } from "react-router-dom";
+import { Link, withRouter } from "react-router-dom";
 import moment from "moment";
 import Loader from "./partials/loader/Loader";
 import TagPills from "./partials/TagPills";
@@ -155,7 +155,7 @@ function ArticleMeta(props) {
     <div className="article-meta">
       <Link to={`/profiles/${article.author.username}`}>
         <img
-          src={article.author.image || "http://i.imgur.com/Qr71crq.jpg"}
+          src={article.author.image || "http://i.imgur.com/Xzm3mI0.jpg"}
           alt="avatar"
         />
       </Link>

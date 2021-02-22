@@ -35,12 +35,12 @@ class TagList extends Component {
       return <p className="">{error}</p>;
     }
 
-    if (!tagList?.length) {
-      return <h5>No tags...</h5>;
-    }
-
     if (!tagList) {
       return <Loader />;
+    }
+
+    if (!tagList?.length) {
+      return <h5>No tags...</h5>;
     }
 
     return (

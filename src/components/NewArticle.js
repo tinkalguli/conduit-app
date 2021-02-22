@@ -1,5 +1,6 @@
 import { Component } from "react";
-import { Redirect } from "react-router-dom";
+import { withRouter } from "react-router-dom";
+import Spinner from "./partials/spinner/Spinner";
 import { articleURL, localStorageKey } from "./utility/utility";
 
 class NewArticle extends Component {
@@ -15,11 +16,12 @@ class NewArticle extends Component {
       tagList: "",
     },
     tagInput: "",
-    createdArticle: null,
+    isCreating: false,
     requestError: "",
   };
   handleSubmit = (event) => {
     event.preventDefault();
+    this.setState({ isCreating: true });
     const { title, description, body, tagList } = this.state;
     const article = { title, description, body, tagList };
     const errors = this.state.errors;
@@ -46,10 +48,14 @@ class NewArticle extends Component {
           }
           return res.json();
         })
-        .then((data) => this.setState({ createdArticle: data.article }))
+        .then(({ article }) => {
+          this.setState({ isCreating: false });
+          this.props.history.push(`/articles/${article.slug}`);
+        })
         .catch(() => {
           this.setState({
             requestError: "Not able to create the article",
+            isCreating: false,
           });
         });
     }
@@ -89,13 +95,9 @@ class NewArticle extends Component {
       tagList,
       errors,
       tagInput,
-      createdArticle,
+      isCreating,
       requestError,
     } = this.state;
-
-    if (createdArticle) {
-      return <Redirect to={`/articles/${createdArticle.slug}`} />;
-    }
 
     return (
       <div className="editor-page">
@@ -140,7 +142,7 @@ class NewArticle extends Component {
                   <textarea
                     onChange={this.handleChange}
                     name="body"
-                    valu={body}
+                    value={body}
                     className="form-control"
                     rows="10"
                     placeholder="Write your post (in markdown)"
@@ -181,7 +183,7 @@ class NewArticle extends Component {
                   </ul>
                 </fieldset>
                 <button className="btn btn-lg btn-primary pull-xs-right">
-                  Create Post
+                  {isCreating ? <Spinner /> : "Create Post"}
                 </button>
               </form>
             </div>
@@ -216,4 +218,4 @@ export function validateArticleInfo(value, name, errors) {
   }
 }
 
-export default NewArticle;
+export default withRouter(NewArticle);

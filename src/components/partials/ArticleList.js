@@ -79,9 +79,19 @@ class ArticleList extends Component {
       prevProps.activeFeed !== this.props.activeFeed ||
       prevState.activePageIndex !== this.state.activePageIndex
     ) {
-      this.setState({ articleList: null });
-      this.updateData("articleList");
-      this.updateData("totalArticlesCount");
+      this.setState(
+        ({ activePageIndex }) => ({
+          articleList: null,
+          activePageIndex:
+            prevProps.activeFeed !== this.props.activeFeed
+              ? 0
+              : activePageIndex,
+        }),
+        () => {
+          this.updateData("articleList");
+          this.updateData("totalArticlesCount");
+        }
+      );
     }
   }
   handlePageClick = (activePageIndex) => {

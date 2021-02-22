@@ -1,7 +1,7 @@
 import { Component } from "react";
 import Loader from "./loader/Loader";
 import moment from "moment";
-import { Link } from "react-router-dom";
+import { Link, withRouter } from "react-router-dom";
 import { articleURL, localStorageKey } from "../utility/utility";
 import Spinner from "./spinner/Spinner";
 
@@ -11,9 +11,9 @@ class Comment extends Component {
     fetchRequestError: "",
     postRequestError: "",
     commentBody: "",
-    createdComment: null,
+    isCreatingComment: false,
   };
-  fetchData = () => {
+  componentDidMount() {
     const slug = this.props.slug;
 
     fetch(`${articleURL}/${slug}/comments`, {
@@ -36,15 +36,12 @@ class Comment extends Component {
           fetchRequestError: "Not able to fetch the comments",
         });
       });
-  };
-  componentDidMount() {
-    this.fetchData();
   }
   handleSubmit = (event) => {
     event.preventDefault();
 
     this.setState({
-      createdComment: "spinning",
+      isCreatingComment: true,
     });
 
     const slug = this.props.slug;
@@ -67,13 +64,19 @@ class Comment extends Component {
         }
         return res.json();
       })
-      .then((data) => this.setState({ createdComment: data.comment }))
-      .then(() => {
-        this.fetchData();
+      .then(({ comment }) => {
+        let comments = [...this.state.comments];
+        comments.unshift(comment);
+        this.setState({
+          comments,
+          isCreatingComment: false,
+          commentBody: "",
+        });
       })
       .catch((errors) => {
         this.setState({
           postRequestError: "Not able to create the comment",
+          isCreatingComment: false,
         });
       });
   };
@@ -84,12 +87,41 @@ class Comment extends Component {
       [name]: value,
     });
   };
+  handleDeleteComment = (id) => {
+    const slug = this.props.slug;
+    const requestOptions = {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        authorization: localStorage.getItem(localStorageKey),
+      },
+    };
+    fetch(`${articleURL}/${slug}/comments/${id}`, requestOptions)
+      .then(async (res) => {
+        if (!res.ok) {
+          const { errors } = await res.json();
+          return await Promise.reject(errors);
+        }
+        return res.json();
+      })
+      .then(() => {
+        let filteredComments = [...this.state.comments].filter(
+          (comment) => comment.id !== id
+        );
+        this.setState({
+          comments: filteredComments,
+        });
+      })
+      .catch((errors) => {
+        console.log(errors);
+      });
+  };
   render() {
     const {
       comments,
       fetchRequestError,
       commentBody,
-      createdComment,
+      isCreatingComment,
     } = this.state;
 
     return (
@@ -114,50 +146,54 @@ class Comment extends Component {
                 <img
                   src={
                     this.props?.user?.image ||
-                    "http://i.imgur.com/Qr71crq.jpg"
+                    "http://i.imgur.com/Xzm3mI0.jpg"
                   }
                   className="comment-author-img"
                   alt="current user avatar"
                 />
                 <button className="btn btn-sm btn-primary">
-                  {createdComment === "spinning" ? (
-                    <Spinner />
-                  ) : (
-                    "Post Comment"
-                  )}
+                  {isCreatingComment ? <Spinner /> : "Post Comment"}
                 </button>
               </div>
             </form>
           ) : (
             ""
           )}
-          {Comments(comments, fetchRequestError, this.props.user)}
+          <Comments
+            comments={comments}
+            fetchRequestError={fetchRequestError}
+            currentUser={this.props.user}
+            handleDeleteComment={this.handleDeleteComment}
+          />
         </div>
       </div>
     );
   }
 }
 
-function Comments(comments, fetchRequestError, currentUser) {
-  if (fetchRequestError) {
-    return <p className="article-preview">{fetchRequestError}</p>;
+function Comments(props) {
+  if (props.fetchRequestError) {
+    return <p className="article-preview">{props.fetchRequestError}</p>;
   }
 
-  if (!comments) {
+  if (!props.comments) {
     return <Loader />;
   }
 
-  if (!comments?.length) {
+  if (!props.comments?.length) {
     return <h5 className="article-preview">No comments...</h5>;
   }
 
-  return comments.map((comment) => (
+  return props.comments.map((comment) => (
     <div key={comment?.id} className="card">
       <div className="card-block">
         <p className="card-text">{comment.body}</p>
       </div>
       <div className="card-footer">
-        <Link to="/profile" className="comment-author">
+        <Link
+          to={`/profiles/${comment.author.username}`}
+          className="comment-author"
+        >
           <img
             src={comment.author?.image || "http://i.imgur.com/Xzm3mI0.jpg"}
             alt="avatar"
@@ -165,16 +201,24 @@ function Comments(comments, fetchRequestError, currentUser) {
           />
         </Link>
         &nbsp;
-        <Link to="/profile" className="comment-author">
+        <Link
+          to={`/profiles/${comment.author.username}`}
+          className="comment-author"
+        >
           {comment.author.username}
         </Link>
         <span className="date-posted">
           {moment(comment.createdAt).format("dddd, MMMM Do YYYY")}
         </span>
-        {currentUser.username === comment.author.username ? (
+        {props.currentUser.username === comment.author.username ? (
           <div className="mod-options">
-            <span className="ion-edit">✏️</span>
-            <span className="ion-trash-a">🗑</span>
+            {/* <span className="ion-edit">✏️</span> */}
+            <span
+              onClick={() => props.handleDeleteComment(comment.id)}
+              className="ion-trash-a"
+            >
+              🗑
+            </span>
           </div>
         ) : (
           ""
@@ -184,4 +228,4 @@ function Comments(comments, fetchRequestError, currentUser) {
   ));
 }
 
-export default Comment;
+export default withRouter(Comment);

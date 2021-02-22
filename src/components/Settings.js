@@ -2,10 +2,10 @@ import { Component } from "react";
 import { withRouter } from "react-router-dom";
 import { currentUserURL, localStorageKey } from "./utility/utility";
 import { validateUserInfo } from "./Register";
+import Spinner from "./partials/spinner/Spinner";
 
 class Settings extends Component {
   state = {
-    updatedUser: null,
     updateRequestError: "",
     username: "",
     email: "",
@@ -17,12 +17,14 @@ class Settings extends Component {
       email: "",
       password: "",
     },
+    isUpdating: false,
   };
   componentDidMount() {
     this.setState({ ...this.props.user });
   }
   handleSubmit = (event) => {
     event.preventDefault();
+    this.setState({ isUpdating: true });
     const { username, email, bio, image, password } = this.state;
     let user = { username, email, bio, image };
     if (password) {
@@ -50,11 +52,13 @@ class Settings extends Component {
         })
         .then(({ user }) => {
           this.props.updateUser(user);
-          this.props.history.push("/profile");
+          this.setState({ isUpdating: false });
+          this.props.history.push(`/profiles/${user.username}`);
         })
         .catch((errors) => {
           this.setState({
             updateRequestError: "Not able to update current user",
+            isUpdating: false,
           });
         });
     }
@@ -88,6 +92,7 @@ class Settings extends Component {
       bio,
       image,
       errors,
+      isUpdating,
       updateRequestError,
     } = this.state;
 
@@ -168,7 +173,7 @@ class Settings extends Component {
                     )}
                   </fieldset>
                   <button className="btn btn-lg btn-primary pull-xs-right">
-                    Update Settings
+                    {isUpdating ? <Spinner /> : "Update Settings"}
                   </button>
                 </fieldset>
               </form>

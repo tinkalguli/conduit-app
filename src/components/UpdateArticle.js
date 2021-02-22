@@ -1,5 +1,7 @@
 import { Component } from "react";
-import { Redirect } from "react-router-dom";
+import { withRouter } from "react-router-dom";
+import Loader from "./partials/loader/Loader";
+import Spinner from "./partials/spinner/Spinner";
 import { articleURL, localStorageKey } from "./utility/utility";
 
 class UpdateArticle extends Component {
@@ -8,21 +10,53 @@ class UpdateArticle extends Component {
     description: "",
     body: "",
     tagList: [],
+    article: null,
     errors: {
       description: "",
       body: "",
       title: "",
       tagList: "",
     },
+    isUpdating: false,
     tagInput: "",
-    createdArticle: null,
     requestError: "",
   };
+  componentDidMount() {
+    const slug = this.props.match.params.slug;
+
+    const requestOptions = {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        authorization: localStorage.getItem(localStorageKey),
+      },
+    };
+
+    fetch(`${articleURL}/${slug}`, requestOptions)
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(res.statusText);
+        }
+        return res.json();
+      })
+      .then(({ article }) => {
+        this.setState({ ...article, article });
+      })
+      .catch(() => {
+        this.setState({
+          error: "Not able to fetch the article",
+        });
+      });
+  }
   handleSubmit = (event) => {
     event.preventDefault();
+    this.setState({
+      isUpdating: true,
+    });
     const { title, description, body, tagList } = this.state;
     const article = { title, description, body, tagList };
     const errors = this.state.errors;
+    const slug = this.props.match.params.slug;
 
     if (
       !errors.title &&
@@ -31,14 +65,14 @@ class UpdateArticle extends Component {
       !errors.tagList
     ) {
       const requestOptions = {
-        method: "POST",
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
           authorization: localStorage.getItem(localStorageKey),
         },
         body: JSON.stringify({ article }),
       };
-      fetch(articleURL, requestOptions)
+      fetch(`${articleURL}/${slug}`, requestOptions)
         .then(async (res) => {
           if (!res.ok) {
             const { errors } = await res.json();
@@ -46,10 +80,16 @@ class UpdateArticle extends Component {
           }
           return res.json();
         })
-        .then((data) => this.setState({ createdArticle: data.article }))
+        .then(({ article }) => {
+          this.setState({
+            isUpdating: false,
+          });
+          this.props.history.push(`/articles/${article.slug}`);
+        })
         .catch(() => {
           this.setState({
-            requestError: "Not able to create the article",
+            requestError: "Not able to update the article",
+            isUpdating: false,
           });
         });
     }
@@ -87,14 +127,15 @@ class UpdateArticle extends Component {
       description,
       body,
       tagList,
+      article,
       errors,
+      isUpdating,
       tagInput,
-      createdArticle,
       requestError,
     } = this.state;
 
-    if (createdArticle) {
-      return <Redirect to={`/articles/${createdArticle.slug}`} />;
+    if (!article) {
+      return <Loader />;
     }
 
     return (
@@ -140,7 +181,7 @@ class UpdateArticle extends Component {
                   <textarea
                     onChange={this.handleChange}
                     name="body"
-                    valu={body}
+                    value={body}
                     className="form-control"
                     rows="10"
                     placeholder="Write your post (in markdown)"
@@ -181,7 +222,7 @@ class UpdateArticle extends Component {
                   </ul>
                 </fieldset>
                 <button className="btn btn-lg btn-primary pull-xs-right">
-                  Create Post
+                  {isUpdating ? <Spinner /> : "Update Post"}
                 </button>
               </form>
             </div>
@@ -216,4 +257,4 @@ export function validateArticleInfo(value, name, errors) {
   }
 }
 
-export default UpdateArticle;
+export default withRouter(UpdateArticle);

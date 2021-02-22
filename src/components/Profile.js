@@ -79,7 +79,7 @@ class Profile extends Component {
               <div className="col-xs-12 col-md-10 offset-md-1">
                 <img
                   src={
-                    profileUser?.image || "http://i.imgur.com/Qr71crq.jpg"
+                    profileUser?.image || "http://i.imgur.com/Xzm3mI0.jpg"
                   }
                   className="user-img"
                   alt="avatar"
