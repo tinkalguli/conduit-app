@@ -52,6 +52,18 @@ class Profile extends Component {
       activeFeed: activeFeed,
     });
   };
+  handleFollowClick = (profile) => {
+    updateFollowUser(
+      profile.username,
+      profile.following,
+      this.updateFollowedState
+    );
+  };
+  updateFollowedState = (profileUser) => {
+    this.setState({
+      profileUser,
+    });
+  };
   render() {
     const { activeFeed, profileUser } = this.state;
 
@@ -83,9 +95,17 @@ class Profile extends Component {
                     Profile Settings
                   </Link>
                 ) : (
-                  <button className="btn btn-sm btn-outline-secondary action-btn">
+                  <button
+                    onClick={() => this.handleFollowClick(profileUser)}
+                    className={`btn btn-sm btn-outline-secondary action-btn ${
+                      profileUser.following ? "active" : ""
+                    }`}
+                  >
                     <span className="ion-plus-round">➕️</span>
-                    &nbsp; Follow {profileUser?.username}{" "}
+                    &nbsp; {profileUser.following
+                      ? "Unfollow"
+                      : "Follow"}{" "}
+                    {profileUser.username}{" "}
                   </button>
                 )}
               </div>
@@ -138,6 +158,41 @@ class Profile extends Component {
       </div>
     );
   }
+}
+
+export function updateFollowUser(
+  username,
+  following,
+  updateFollowedState
+) {
+  let requestOptions;
+  if (!following) {
+    requestOptions = {
+      method: "POST",
+      headers: {
+        authorization: localStorage.getItem(localStorageKey),
+      },
+    };
+  } else {
+    requestOptions = {
+      method: "DELETE",
+      headers: {
+        authorization: localStorage.getItem(localStorageKey),
+      },
+    };
+  }
+  fetch(`${profileURL}/${username}/follow`, requestOptions)
+    .then(async (res) => {
+      if (!res.ok) {
+        const { errors } = await res.json();
+        return await Promise.reject(errors);
+      }
+      return res.json();
+    })
+    .then(({ profile }) => updateFollowedState(profile))
+    .catch((errors) => {
+      console.log(errors);
+    });
 }
 
 export default withRouter(Profile);

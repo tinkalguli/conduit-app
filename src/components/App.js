@@ -8,12 +8,12 @@ import Register from "./Register";
 import SingleArticle from "./SingleArticle";
 import NewArticle from "./NewArticle";
 import Settings from "./Settings";
-import CurrentUserProfile from "./CurrentUserProfile";
 import { Component } from "react";
 import { localStorageKey, currentUserURL } from "./utility/utility";
 import FullPageSpinner from "./partials/fullPageSpinner/FullPageSpinner";
 import NoMatch from "./NoMatch";
 import Profile from "./Profile";
+import UpdateArticle from "./UpdateArticle";
 
 class App extends Component {
   state = {
@@ -96,14 +96,14 @@ function AuthenticatedApp(props) {
           deleteUser={props.deleteUser}
         />
       </Route>
-      {/* <Route path="/profile">
-        <CurrentUserProfile user={props.user} />
-      </Route> */}
       <Route path="/profiles/:username">
         <Profile user={props.user} />
       </Route>
       <Route path="/articles/:slug">
         <SingleArticle user={props.user} />
+      </Route>
+      <Route path="/editor/:slug">
+        <UpdateArticle />
       </Route>
       <Route path="*">
         <NoMatch />

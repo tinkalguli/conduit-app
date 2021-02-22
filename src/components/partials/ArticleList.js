@@ -4,6 +4,7 @@ import moment from "moment";
 import { Link } from "react-router-dom";
 import TagPills from "./TagPills";
 import Pagination from "./Pagination";
+import { updateFavoriteArticle } from "../SingleArticle";
 import { articleURL, feedURL, localStorageKey } from "../utility/utility";
 
 class ArticleList extends Component {
@@ -88,6 +89,27 @@ class ArticleList extends Component {
       activePageIndex,
     });
   };
+  handleFavoriteClick = (slug) => {
+    const article = this.state.articleList.find(
+      (article) => article.slug === slug
+    );
+    updateFavoriteArticle(
+      article.slug,
+      article.favorited,
+      this.updateFavoritedState
+    );
+  };
+  updateFavoritedState = (updatedArticle) => {
+    const articleList = [...this.state.articleList];
+    let favoritedArticle = articleList.find(
+      (article) => article.slug === updatedArticle.slug
+    );
+    favoritedArticle.favorited = updatedArticle.favorited;
+    favoritedArticle.favoritesCount = updatedArticle.favoritesCount;
+    this.setState({
+      articleList,
+    });
+  };
   render() {
     const {
       articleList,
@@ -134,7 +156,12 @@ class ArticleList extends Component {
                   {moment(article.createdAt).format("dddd, MMMM Do YYYY")}
                 </span>
               </div>
-              <button className="btn btn-outline-primary btn-sm pull-xs-right">
+              <button
+                onClick={() => this.handleFavoriteClick(article.slug)}
+                className={`btn btn-outline-primary btn-sm pull-xs-right ${
+                  article.favorited ? "active" : ""
+                }`}
+              >
                 <span className="ion-heart">💚</span>{" "}
                 {article.favoritesCount}
               </button>
