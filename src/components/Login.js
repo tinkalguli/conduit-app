@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { loginURL } from "./utility/utility";
 import { validateUserInfo } from "./Register";
 import { withRouter } from "react-router-dom";
+import Spinner from "./partials/spinner/Spinner";
 
 class Login extends Component {
   state = {
@@ -14,9 +15,11 @@ class Login extends Component {
     },
     requestError: "",
     validationError: "",
+    isLogging: false,
   };
   handleSubmit = (event) => {
     event.preventDefault();
+    this.setState({ isLogging: true });
     const { email, password } = this.state;
     const user = { email, password };
     const errors = this.state.errors;
@@ -43,10 +46,12 @@ class Login extends Component {
             this.props.updateUser(data.user);
             this.props.history.push("/");
           }
+          this.setState({ isLogging: false });
         })
         .catch((error) => {
           this.setState({
             requestError: "Not able to login",
+            isLogging: false,
           });
         });
     }
@@ -69,6 +74,7 @@ class Login extends Component {
       errors,
       validationError,
       requestError,
+      isLogging,
     } = this.state;
 
     return (
@@ -120,7 +126,7 @@ class Login extends Component {
                   )}
                 </fieldset>
                 <button className="btn btn-lg btn-primary pull-xs-right">
-                  Sign in
+                  {isLogging ? <Spinner /> : "Sign in"}
                 </button>
               </form>
             </div>

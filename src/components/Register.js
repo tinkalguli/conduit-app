@@ -2,6 +2,7 @@ import { Component } from "react";
 import { Link } from "react-router-dom";
 import { registerURL } from "./utility/utility";
 import { withRouter } from "react-router-dom";
+import Spinner from "./partials/spinner/Spinner";
 
 class Register extends Component {
   state = {
@@ -15,9 +16,11 @@ class Register extends Component {
     },
     requestError: "",
     validationError: "",
+    isRegistering: false,
   };
   handleSubmit = (event) => {
     event.preventDefault();
+    this.setState({ isRegistering: true });
     const { username, email, password } = this.state;
     const user = { username, email, password };
     const errors = this.state.errors;
@@ -49,10 +52,12 @@ class Register extends Component {
             this.props.updateUser(data.user);
             this.props.history.push("/");
           }
+          this.setState({ isRegistering: false });
         })
         .catch((error) => {
           this.setState({
             requestError: "Not able to login",
+            isRegistering: false,
           });
         });
     }
@@ -75,6 +80,7 @@ class Register extends Component {
       errors,
       validationError,
       requestError,
+      isRegistering,
     } = this.state;
 
     return (
@@ -147,7 +153,7 @@ class Register extends Component {
                   type="submit"
                   className={`btn btn-lg btn-primary pull-xs-right`}
                 >
-                  Sign up
+                  {isRegistering ? <Spinner /> : "Sign up"}
                 </button>
               </form>
             </div>
