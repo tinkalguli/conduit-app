@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import TagPills from "./TagPills";
 import Pagination from "./Pagination";
 import { updateFavoriteArticle } from "../SingleArticle";
-import { articleURL, feedURL, localStorageKey } from "../utility/utility";
+import { articleURL, feedURL, localStorageKey } from "../utility/utils";
 
 class ArticleList extends Component {
   state = {
@@ -21,9 +21,7 @@ class ArticleList extends Component {
     let url = articleURL;
     let query =
       dataName === "articleList"
-        ? `limit=${articlePerPage}&offset=${
-            articlePerPage * activePageIndex
-          }`
+        ? `limit=${articlePerPage}&offset=${articlePerPage * activePageIndex}`
         : "";
 
     if (activeTag) {
@@ -59,9 +57,7 @@ class ArticleList extends Component {
       .then((data) => {
         this.setState({
           [dataName]:
-            dataName === "articleList"
-              ? data.articles
-              : data.articlesCount,
+            dataName === "articleList" ? data.articles : data.articlesCount,
         });
       })
       .catch((errors) => {
@@ -148,10 +144,7 @@ class ArticleList extends Component {
             <div className="article-meta">
               <a href="profile.html">
                 <img
-                  src={
-                    article.author.image ||
-                    "http://i.imgur.com/Xzm3mI0.jpg"
-                  }
+                  src={article.author.image || "http://i.imgur.com/Xzm3mI0.jpg"}
                   alt="avatar"
                 />
               </a>
@@ -172,8 +165,7 @@ class ArticleList extends Component {
                   article.favorited ? "active" : ""
                 }`}
               >
-                <span className="ion-heart">💚</span>{" "}
-                {article.favoritesCount}
+                <span className="ion-heart">💚</span> {article.favoritesCount}
               </button>
             </div>
             <Link to={`articles/${article.slug}`} className="preview-link">

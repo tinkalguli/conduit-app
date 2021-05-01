@@ -2,7 +2,7 @@ import { Component } from "react";
 import Loader from "./loader/Loader";
 import moment from "moment";
 import { Link, withRouter } from "react-router-dom";
-import { articleURL, localStorageKey } from "../utility/utility";
+import { articleURL, localStorageKey } from "../utility/utils";
 import Spinner from "./spinner/Spinner";
 
 class Comment extends Component {
@@ -128,10 +128,7 @@ class Comment extends Component {
       <div className="row">
         <div className="col-xs-12 col-md-8 offset-md-2">
           {this.props.user ? (
-            <form
-              onSubmit={this.handleSubmit}
-              className="card comment-form"
-            >
+            <form onSubmit={this.handleSubmit} className="card comment-form">
               <div className="card-block">
                 <textarea
                   name="commentBody"
@@ -145,8 +142,7 @@ class Comment extends Component {
               <div className="card-footer">
                 <img
                   src={
-                    this.props?.user?.image ||
-                    "http://i.imgur.com/Xzm3mI0.jpg"
+                    this.props?.user?.image || "http://i.imgur.com/Xzm3mI0.jpg"
                   }
                   className="comment-author-img"
                   alt="current user avatar"

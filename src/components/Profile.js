@@ -2,7 +2,7 @@ import { Component } from "react";
 import { withRouter, Link } from "react-router-dom";
 import ArticleList from "./partials/ArticleList";
 import Loader from "./partials/loader/Loader";
-import { localStorageKey, profileURL } from "./utility/utility";
+import { localStorageKey, profileURL } from "./utility/utils";
 
 class Profile extends Component {
   state = {
@@ -41,9 +41,7 @@ class Profile extends Component {
     this.fetchData();
   }
   componentDidUpdate(prevProps) {
-    if (
-      prevProps.match.params.username !== this.props.match.params.username
-    ) {
+    if (prevProps.match.params.username !== this.props.match.params.username) {
       this.fetchData();
     }
   }
@@ -78,9 +76,7 @@ class Profile extends Component {
             <div className="row">
               <div className="col-xs-12 col-md-10 offset-md-1">
                 <img
-                  src={
-                    profileUser?.image || "http://i.imgur.com/Xzm3mI0.jpg"
-                  }
+                  src={profileUser?.image || "http://i.imgur.com/Xzm3mI0.jpg"}
                   className="user-img"
                   alt="avatar"
                 />
@@ -91,8 +87,8 @@ class Profile extends Component {
                     to="/settings"
                     className="btn btn-sm btn-outline-secondary action-btn"
                   >
-                    <span className="ion-compose">⚙️</span>&nbsp;Edit
-                    Profile Settings
+                    <span className="ion-compose">⚙️</span>&nbsp;Edit Profile
+                    Settings
                   </Link>
                 ) : (
                   <button
@@ -102,9 +98,7 @@ class Profile extends Component {
                     }`}
                   >
                     <span className="ion-plus-round">➕️</span>
-                    &nbsp; {profileUser.following
-                      ? "Unfollow"
-                      : "Follow"}{" "}
+                    &nbsp; {profileUser.following ? "Unfollow" : "Follow"}{" "}
                     {profileUser.username}{" "}
                   </button>
                 )}
@@ -160,11 +154,7 @@ class Profile extends Component {
   }
 }
 
-export function updateFollowUser(
-  username,
-  following,
-  updateFollowedState
-) {
+export function updateFollowUser(username, following, updateFollowedState) {
   let requestOptions;
   if (!following) {
     requestOptions = {

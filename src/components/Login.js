@@ -1,6 +1,6 @@
 import { Component } from "react";
 import { Link } from "react-router-dom";
-import { loginURL } from "./utility/utility";
+import { loginURL } from "./utility/utils";
 import { validateUserInfo } from "./Register";
 import { withRouter } from "react-router-dom";
 import Spinner from "./partials/spinner/Spinner";

@@ -1,6 +1,6 @@
 import { Component } from "react";
 import { Link } from "react-router-dom";
-import { registerURL } from "./utility/utility";
+import { registerURL } from "./utility/utils";
 import { withRouter } from "react-router-dom";
 import Spinner from "./partials/spinner/Spinner";
 

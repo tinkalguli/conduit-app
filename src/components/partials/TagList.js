@@ -1,6 +1,6 @@
 import { Component } from "react";
 import Loader from "./loader/Loader";
-import { tagsURL } from "../utility/utility";
+import { tagsURL } from "../utility/utils";
 
 class TagList extends Component {
   state = {

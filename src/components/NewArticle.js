@@ -1,7 +1,7 @@
 import { Component } from "react";
 import { withRouter } from "react-router-dom";
 import Spinner from "./partials/spinner/Spinner";
-import { articleURL, localStorageKey } from "./utility/utility";
+import { articleURL, localStorageKey } from "./utility/utils";
 
 class NewArticle extends Component {
   state = {

@@ -9,7 +9,7 @@ import SingleArticle from "./SingleArticle";
 import NewArticle from "./NewArticle";
 import Settings from "./Settings";
 import { Component } from "react";
-import { localStorageKey, currentUserURL } from "./utility/utility";
+import { localStorageKey, currentUserURL } from "./utility/utils";
 import FullPageSpinner from "./partials/fullPageSpinner/FullPageSpinner";
 import NoMatch from "./NoMatch";
 import Profile from "./Profile";

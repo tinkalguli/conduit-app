@@ -6,7 +6,7 @@ import TagPills from "./partials/TagPills";
 import Comment from "./partials/Comment";
 import ReactMarkdown from "react-markdown";
 import { updateFollowUser } from "./Profile";
-import { articleURL, localStorageKey } from "./utility/utility";
+import { articleURL, localStorageKey } from "./utility/utils";
 
 class SingleArticle extends Component {
   state = {
@@ -160,10 +160,7 @@ function ArticleMeta(props) {
         />
       </Link>
       <div className="info">
-        <Link
-          to={`/profiles/${article.author.username}`}
-          className="author"
-        >
+        <Link to={`/profiles/${article.author.username}`} className="author">
           {article.author.username}
         </Link>
         <span className="date">
@@ -215,11 +212,7 @@ function ArticleMeta(props) {
   );
 }
 
-export function updateFavoriteArticle(
-  slug,
-  isFavorited,
-  updateFavoritedState
-) {
+export function updateFavoriteArticle(slug, isFavorited, updateFavoritedState) {
   let requestOptions;
   if (!isFavorited) {
     requestOptions = {

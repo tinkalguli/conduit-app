@@ -1,6 +1,6 @@
 import { Component } from "react";
 import { withRouter } from "react-router-dom";
-import { currentUserURL, localStorageKey } from "./utility/utility";
+import { currentUserURL, localStorageKey } from "./utility/utils";
 import { validateUserInfo } from "./Register";
 import Spinner from "./partials/spinner/Spinner";
 
